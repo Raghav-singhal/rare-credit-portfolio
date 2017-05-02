@@ -11,7 +11,7 @@ from scipy.stats import norm
 from scipy.stats import rv_discrete
 import matplotlib.pyplot as plt
 
-sigma0 = 0.4
+sigma0 = 0.6
 kappa = 3.5
 sigmaH = .4
 gamma = .7
