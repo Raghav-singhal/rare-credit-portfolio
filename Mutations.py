@@ -8,7 +8,6 @@ Created on Tue May  2 19:33:26 2017
 
 
 import numpy as np
-import matplotlib.pyplot as plt
 from functions import CovMatrix
 
 sigma0 = 0.4
@@ -30,12 +29,9 @@ T3 = 3
 T4 = 4
 T5 = 5
 
-N = 125 # number of assets in portfolio
 n = 20 # number of selection steps in a year
 alpha = 0.1 # experimental parameter
 
-M = int(10e+3) # number of particle
-C = CovMatrix(N,dt)
 timesteps = int(1./(n*dt)) # T/n*dt where n = 20 per year 
 
 
@@ -47,10 +43,6 @@ euler scheme --- Xn+1 = Xn + a(Xn)dt + b(Xn)dW
 a(Xn) = [kappa*(sigmaHat - sigma(n)) ,r*S1,..,r*SN]  
 b(Xn) =  [gamma*np.sqrt(sigma(n)),simga0*sigma(n)*S1,.....,simga0*sigma(n)*SN]
 
-
-"""
-
-"""
 portfolio = [sigma,S1,...SN]
 """
 def a(portfolio):
@@ -63,21 +55,19 @@ def b(portfolio):
     
     return np.vstack((gamma*np.sqrt(sigma),sigma0*sigma*S))
 
-
-
 """
 X = M * number of portfolios * 1
 """
 def func(X):
     return [a(x) for x in X],[b(x) for x in X]
 
-
-
-
-def Mutation(Xn,C,timesteps,T):
-    M = np.shape(Xn)[0]
+def Mutation(Xn,T):
+    M = np.shape(Xn)[0] # number of portfolios
+    N = int((np.shape(Xn)[1]-1)/2) # number of assets in a portfolio
     
-    X = [(x[:N+1,:]) for x in Xn]
+    C = CovMatrix(N,dt)
+    
+    X = [(x[:N+1,:]) for x in Xn] 
     minX = [(x[N+1:,:]) for x in Xn]
             
     for i in range(T*timesteps):
@@ -100,6 +90,5 @@ def Mutation(Xn,C,timesteps,T):
     return Xhat,Xn
     
     
-    
-    
+
     
