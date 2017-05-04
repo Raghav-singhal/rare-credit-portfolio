@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.stats import rv_discrete
+import warnings
 
 # Xp, Wp - matrices of size numPortfolios x (2N+1). Current state and history.
 # Returns:
@@ -33,3 +34,34 @@ def selection(Xp, Wp, alpha):
         values=(np.arange(numPortfolios), probabilities)).rvs(size=numPortfolios)
     Xnew = Xp[sampled_indices, :]
     return Xnew, norm_const
+
+
+def mutation_step(Xn, params, A, B, covariancefn):
+    M = np.shape(Xn)[0]  # Number of portfolios
+    N = int((np.shape(Xn)[1] - 1) / 2)  # Number of assets
+    C = covariancefn(N, params)
+    X = Xn[:, :N + 1]
+    minX = Xn[:, N + 1:]
+    a1 = A(X, params)
+    b1 = B(X, params)
+    dW = np.sqrt(params['dt']) * \
+        np.random.multivariate_normal(np.zeros(N + 1), C, M)
+    X += a1 * params['dt'] + b1 * dW
+    np.copyto(minX, np.minimum(X[:, 1:], minX))
+    return Xn
+
+
+def mutation(Xn, params, A, B, covariancefn):
+    defaults = {'dt': 1e-4, 'Dt': 0.05, 'rho_sigma': -0.06, 'rho': 0.1,
+                'kappa': 3.5, 'sigmaHat': 0.4, 'r': 0.06, 'gamma': 0.7,
+                'sigma0': 0.4}
+    for defkey in defaults.keys():
+        params.setdefault(defkey, defaults[defkey])
+    nTimesteps = int(params['Dt'] / params['dt'])
+    if nTimesteps != params['Dt'] / params['dt']:
+        warnings.warn(
+            'dt does not evenly divide Dt so rounding num of steps to ' + str(nTimesteps))
+    Wn = Xn.copy()
+    for _ in range(nTimesteps):
+        Xn = mutation_step(Xn, params, A, B, covariancefn)
+    return Xn, Wn
