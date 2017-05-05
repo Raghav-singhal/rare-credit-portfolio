@@ -1,0 +1,48 @@
+List of experiments
+
+1. alpha values
+2. Different potential functions
+3. Initial value experiment 
+
+different maturity times
+
+1. N = 1 , solve PDE to get exact distribution and compare answers with IPS
+2. No stochastic volatility, N=1 , implement Goodman's solution
+3. check convergence rate to MC p's
+
+
+Unlikely suggestions
+1. Sensitivity Analysis
+
+
+
+Plots------------
+
+MC distribution with - multiple values of M - t=1,2,3,4,5
+log plot of the above 
+
+MC and IPS comparison for all T's
+
+for IPS distribution vary - M , alpha
+
+no stochastic volatility - find exact solution, comapare with M
+with stochastic volatility - find PDE solution for the pdf, and compare
+
+-------------------
+Report
+theory - raghav
+
+algorithm - raghav / srivas
+
+results IPS -srivas
+
+
+Priority
+
+
+
+
+
+
+
+
