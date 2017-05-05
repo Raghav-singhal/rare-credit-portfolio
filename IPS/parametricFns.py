@@ -16,8 +16,8 @@ def B(portfolio, params):
 
 def Cfn(N, params):
     N += 1
-    C = params['rho'] * params['dt'] * np.ones((N, N))
-    np.fill_diagonal(C, params['dt'])
-    C[0, 1:] = params['rho_sigma'] * params['dt']
-    C[1:, 0] = params['rho_sigma'] * params['dt']
+    C = params['rho'] * np.ones((N, N))
+    np.fill_diagonal(C, 1)
+    C[0, 1:] = params['rho_sigma']
+    C[1:, 0] = params['rho_sigma']
     return C

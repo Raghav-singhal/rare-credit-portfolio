@@ -93,11 +93,11 @@ def numDefaults(minXn, barrier):
 # alpha - Potential function parameter
 # norm_consts - numpy array of size n with normalization constants
 # calculated at each selection stage.
-def estimator(X0, Wn, barrier, alpha, norm_consts):
+def estimator(X0, Xn,  Wn, barrier, alpha, norm_consts):
     M = np.shape(X0)[0]  # Number of portfolios
     N = int((np.shape(X0)[1] - 1) / 2)  # Number of assets
     G = potential(X0, Wn, alpha)
-    ndefaults = numDefaults(X0[:, N + 1:], barrier)
+    ndefaults = numDefaults(Xn[:, N + 1:], barrier)
     p = np.zeros(N + 1)
     normalization = norm_consts.prod()
     for i in range(N + 1):

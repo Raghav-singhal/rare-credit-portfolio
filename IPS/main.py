@@ -17,7 +17,7 @@ parser.add_argument('--nselection', '-NS', default=20, type=int,
                     help='Number of selection steps to be done (Default: %(default)s)')
 parser.add_argument('--startprice', '-SP', default=90, type=float,
                     help='Initial price of assets (Default: %(default)s)')
-parser.add_argument('--startvol', '-SV', default=0.04, type=float,
+parser.add_argument('--startvol', '-SV', default=0.4, type=float,
                     help='Initial stochastic volatility (Default: %(default)s)')
 parser.add_argument('--alpha', default=0.1, type=float,
                     help='alpha in potential function (Default: %(default)s)')
@@ -57,4 +57,4 @@ for i in tqdm(range(n)):
     # Wn_am.append(Wn.copy())
     norm_consts.append(nc)
 norm_consts = np.array(norm_consts)
-default_prob = IPS.estimator(X0, Wn, barriers, alpha, norm_consts)
+default_prob = IPS.estimator(X0, Xn, Wn, barriers, alpha, norm_consts)
