@@ -43,6 +43,8 @@ if __name__ == '__main__':
                         help='Barrier price for all assets (Default: %(default)s)')
     parser.add_argument('--results', type=str,
                         help='Result directory to save to in results/ . Takes value based on parameters if unspecified')
+    parser.add_argument('--jobs', type=int, default=4,
+                        help='Worker jobs in pool (Default: %(default)s')
     args = parser.parse_args()
 
     initPrices = args.startprice * np.ones((args.nportfolio, args.nfirms))
@@ -66,7 +68,7 @@ if __name__ == '__main__':
     Wn = []
     norm_consts = []
     default_prob = []
-    with Pool(processes=4) as pool:
+    with Pool(processes=args.jobs) as pool:
         multipleresults = [pool.apply_async(
             runIPS, (X0, params, n, alpha[i], barriers, i)) for i in range(len(alpha))]
         for i in range(len(alpha)):
