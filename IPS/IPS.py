@@ -65,7 +65,7 @@ def mutation_step(Xn, params, A, B, covariancefn):
 
 
 def mutation(Xn, params, A, B, covariancefn, tqdmParams=None):
-    defaults = {'dt': 1e-4, 'Dt': 0.05, 'rho_sigma': -0.06, 'rho': 0.1,
+    defaults = {'dt': 1e-3, 'Dt': 0.05, 'rho_sigma': -0.06, 'rho': 0.1,
                 'kappa': 3.5, 'sigmaHat': 0.4, 'r': 0.06, 'gamma': 0.7,
                 'sigma0': 0.4}
     for defkey in defaults.keys():

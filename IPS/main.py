@@ -34,6 +34,8 @@ if __name__ == '__main__':
                         help='Maturity period of the portfolio in years (Default: %(default)s)')
     parser.add_argument('--nselection', '-NS', default=20, type=int,
                         help='Number of selection steps to be done (Default: %(default)s)')
+    parser.add_argument('--mgranularity', '-dt', default=1e-3, type=float,
+                        help='Granularity of mutation step in years. (Default: %(default)s)')
     parser.add_argument('--startprice', '-SP', default=90, type=float,
                         help='Initial price of assets (Default: %(default)s)')
     parser.add_argument('--startvol', '-SV', default=0.4, type=float,
@@ -45,7 +47,7 @@ if __name__ == '__main__':
     parser.add_argument('--results', type=str,
                         help='Result directory to save to in results/ . Takes value based on parameters if unspecified')
     parser.add_argument('--jobs', type=int, default=4,
-                        help='Worker jobs in pool (Default: %(default)s')
+                        help='Worker jobs in pool (Default: %(default)s)')
     parser.add_argument('--noverbose', action='store_true',
                         help="Don't output any progress")
     parser.add_argument('--notebook', action='store_true',
@@ -65,7 +67,7 @@ if __name__ == '__main__':
     alpha = args.alpha
     barriers = args.barrier * np.ones(args.nfirms)
 
-    params = {'Dt': Dt}
+    params = {'Dt': Dt, 'dt': args.mgranularity}
 
     Xn = []
     Wn = []
