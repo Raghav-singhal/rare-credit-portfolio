@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.stats import rv_discrete
 import warnings
+from tqdm import tqdm
 
 # Xp, Wp - matrices of size numPortfolios x (2N+1). Current state and history.
 # Returns:
@@ -63,7 +64,7 @@ def mutation_step(Xn, params, A, B, covariancefn):
 # Returns Xn+1, Wn+1 - previous and current mutated state.
 
 
-def mutation(Xn, params, A, B, covariancefn):
+def mutation(Xn, params, A, B, covariancefn, nFn):
     defaults = {'dt': 1e-4, 'Dt': 0.05, 'rho_sigma': -0.06, 'rho': 0.1,
                 'kappa': 3.5, 'sigmaHat': 0.4, 'r': 0.06, 'gamma': 0.7,
                 'sigma0': 0.4}
@@ -74,7 +75,7 @@ def mutation(Xn, params, A, B, covariancefn):
         warnings.warn(
             'dt does not evenly divide Dt so rounding num of steps to ' + str(nTimesteps))
     Wn = Xn.copy()
-    for _ in range(nTimesteps):
+    for _ in tqdm(range(nTimesteps), desc='mutation ' + str(nFn), position=2 * nFn + 1):
         Xn = mutation_step(Xn, params, A, B, covariancefn)
     return Xn, Wn
 
