@@ -64,15 +64,15 @@ def mutation_step(Xn, params, A, B, covariancefn):
 # Returns Xn+1, Wn+1 - previous and current mutated state.
 
 
-def mutation(Xn, params, A, B, covariancefn, tqdmParams = None):
+def mutation(Xn, params, A, B, covariancefn, tqdmParams=None):
     defaults = {'dt': 1e-4, 'Dt': 0.05, 'rho_sigma': -0.06, 'rho': 0.1,
                 'kappa': 3.5, 'sigmaHat': 0.4, 'r': 0.06, 'gamma': 0.7,
                 'sigma0': 0.4}
     for defkey in defaults.keys():
         params.setdefault(defkey, defaults[defkey])
-    tqdmDefaults  = {'nFn':0, 'noverbose':False, 'notebook':False}
+    tqdmDefaults = {'nFn': 0, 'noverbose': False, 'notebook': False}
     if tqdmParams is None:
-        tqdmParams  = {}
+        tqdmParams = {}
     for defkey in tqdmDefaults.keys():
         tqdmParams.setdefault(defkey, tqdmDefaults[defkey])
     tqdml = tqdm
@@ -83,7 +83,7 @@ def mutation(Xn, params, A, B, covariancefn, tqdmParams = None):
         warnings.warn(
             'dt does not evenly divide Dt so rounding num of steps to ' + str(nTimesteps))
     Wn = Xn.copy()
-    for _ in tqdml(range(nTimesteps), desc='mutation ' + str(tqdmParams['nFn']), position=2 * tqdmParams['nFn'] + 1, disable = tqdmParams['noverbose']):
+    for _ in tqdml(range(nTimesteps), desc='mutation ' + str(tqdmParams['nFn']), position=2 * tqdmParams['nFn'] + 1, disable=tqdmParams['noverbose']):
         Xn = mutation_step(Xn, params, A, B, covariancefn)
     return Xn, Wn
 
@@ -109,6 +109,9 @@ def estimator(X0, Xn,  Wn, barrier, alpha, norm_consts):
     ndefaults = numDefaults(Xn[:, N + 1:], barrier)
     p = np.zeros(N + 1)
     normalization = norm_consts.prod()
+    defcounts = np.zeros(N + 1)
     for i in range(N + 1):
-        p[i] = np.sum(G * (ndefaults == i)) * normalization / M
-    return p
+        ndef_i = (ndefaults == i)
+        defcounts[i] = ndef_i.sum()
+        p[i] = np.sum(G * ndef_i) * normalization / M
+    return p, defcounts

@@ -12,14 +12,15 @@ def runIPS(X0, params, n, alpha, barriers, tqdmParams):
     Xn = X0.copy()
     Wn = X0.copy()
     norm_consts = []
-    for i in tqdm(range(n), desc='selection ' + str(tqdmParams['nFn']), position=2 * tqdmParams['nFn'],  disable = tqdmParams['noverbose']):
+    for i in tqdm(range(n), desc='selection ' + str(tqdmParams['nFn']), position=2 * tqdmParams['nFn'],  disable=tqdmParams['noverbose']):
         Xn, nc = IPS.selection(Xn, Wn, alpha)
         Xn, Wn = IPS.mutation(Xn, params, parametricFns.A,
                               parametricFns.B, parametricFns.Cfn, tqdmParams)
         norm_consts.append(nc)
     norm_consts = np.array(norm_consts)
-    default_prob = IPS.estimator(X0, Xn, Wn, barriers, alpha, norm_consts)
-    return Xn, Wn, norm_consts, default_prob
+    default_prob, defcounts = IPS.estimator(
+        X0, Xn, Wn, barriers, alpha, norm_consts)
+    return Xn, Wn, norm_consts, default_prob, defcounts
 
 
 if __name__ == '__main__':
@@ -45,8 +46,10 @@ if __name__ == '__main__':
                         help='Result directory to save to in results/ . Takes value based on parameters if unspecified')
     parser.add_argument('--jobs', type=int, default=4,
                         help='Worker jobs in pool (Default: %(default)s')
-    parser.add_argument('--noverbose', action = 'store_true', help = "Don't output any progress")
-    parser.add_argument('--notebook', action = 'store_true', help = "running in notebook")
+    parser.add_argument('--noverbose', action='store_true',
+                        help="Don't output any progress")
+    parser.add_argument('--notebook', action='store_true',
+                        help="running in notebook")
     args = parser.parse_args()
 
     if args.notebook:
@@ -68,19 +71,25 @@ if __name__ == '__main__':
     Wn = []
     norm_consts = []
     default_prob = []
+    defcounts = []
     with Pool(processes=args.jobs) as pool:
         multipleresults = [pool.apply_async(
-            runIPS, (X0, params, n, alpha[i], barriers, {'nFn':i, 'noverbose':args.noverbose, 'notebook':args.notebook})) for i in range(len(alpha))]
+            runIPS, (X0, params, n, alpha[i], barriers, {'nFn': i, 'noverbose': args.noverbose, 'notebook': args.notebook})) for i in range(len(alpha))]
         for i in range(len(alpha)):
-            Xni, Wni, norm_constsi, default_probi = multipleresults[i].get()
+            Xni, Wni, norm_constsi, default_probi, defcountsi = multipleresults[i].get(
+            )
             Xn.append(Xni)
             Wn.append(Wni)
             norm_consts.append(norm_constsi)
             default_prob.append(default_probi)
-    pkT = np.mean(np.vstack(default_prob), axis=0)
+            defcounts.append(defcountsi)
+    maxDefAlphaInd = np.argmax(np.vstack(defcounts), axis=0)
+    pkT = np.vstack(default_prob)[maxDefAlphaInd,
+                                  np.arange(maxDefAlphaInd.shape[0])]
+    #pkT = np.mean(np.vstack(default_prob), axis=0)
 
     results = {'args': args, 'params': params, 'alpha': alpha, 'X0': X0, 'Xn': Xn,
-               'Wn': Wn, 'norm_consts': norm_consts, 'default_prob': default_prob, 'pkT': pkT}
+               'Wn': Wn, 'norm_consts': norm_consts, 'default_prob': default_prob, 'pkT': pkT, 'defcounts': defcounts}
 
     resultDir = args.results or 'np' + str(args.nportfolio) + '_nf' + str(args.nfirms) + '_T' + str(T) + '_ns' + str(n) + '_sp' + str(
         args.startprice) + '_sv' + str(args.startvol) + '_alpha' + str(alpha[0]) + '_' + str(alpha[-1]) + '_' + str(len(alpha))
