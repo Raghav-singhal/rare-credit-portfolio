@@ -8,14 +8,14 @@ from multiprocessing import Pool,  freeze_support
 import os
 
 
-def runIPS(X0, params, n, alpha, barriers, nFn):
+def runIPS(X0, params, n, alpha, barriers, tqdmParams):
     Xn = X0.copy()
     Wn = X0.copy()
     norm_consts = []
-    for i in tqdm(range(n), desc='selection ' + str(nFn), position=2 * nFn):
+    for i in tqdm(range(n), desc='selection ' + str(tqdmParams['nFn']), position=2 * tqdmParams['nFn'],  disable = tqdmParams['noverbose']):
         Xn, nc = IPS.selection(Xn, Wn, alpha)
         Xn, Wn = IPS.mutation(Xn, params, parametricFns.A,
-                              parametricFns.B, parametricFns.Cfn, nFn)
+                              parametricFns.B, parametricFns.Cfn, tqdmParams)
         norm_consts.append(nc)
     norm_consts = np.array(norm_consts)
     default_prob = IPS.estimator(X0, Xn, Wn, barriers, alpha, norm_consts)
@@ -45,7 +45,12 @@ if __name__ == '__main__':
                         help='Result directory to save to in results/ . Takes value based on parameters if unspecified')
     parser.add_argument('--jobs', type=int, default=4,
                         help='Worker jobs in pool (Default: %(default)s')
+    parser.add_argument('--noverbose', action = 'store_true', help = "Don't output any progress")
+    parser.add_argument('--notebook', action = 'store_true', help = "running in notebook")
     args = parser.parse_args()
+
+    if args.notebook:
+        from tqdm import tqdm_notebook as tqdm
 
     initPrices = args.startprice * np.ones((args.nportfolio, args.nfirms))
     initVol = args.startvol * np.ones((args.nportfolio, 1))
@@ -59,18 +64,13 @@ if __name__ == '__main__':
 
     params = {'Dt': Dt}
 
-    resultDir = args.results or 'np' + str(args.nportfolio) + '_nf' + str(args.nfirms) + '_T' + str(T) + '_ns' + str(n) + '_sp' + str(
-        args.startprice) + '_sv' + str(args.startvol) + '_alpha' + str(alpha[0]) + '_' + str(alpha[-1]) + '_' + str(len(alpha))
-    resultDir = 'results' + os.sep + resultDir
-    os.makedirs(resultDir, exist_ok=True)
-
     Xn = []
     Wn = []
     norm_consts = []
     default_prob = []
     with Pool(processes=args.jobs) as pool:
         multipleresults = [pool.apply_async(
-            runIPS, (X0, params, n, alpha[i], barriers, i)) for i in range(len(alpha))]
+            runIPS, (X0, params, n, alpha[i], barriers, {'nFn':i, 'noverbose':args.noverbose, 'notebook':args.notebook})) for i in range(len(alpha))]
         for i in range(len(alpha)):
             Xni, Wni, norm_constsi, default_probi = multipleresults[i].get()
             Xn.append(Xni)
@@ -81,5 +81,11 @@ if __name__ == '__main__':
 
     results = {'args': args, 'params': params, 'alpha': alpha, 'X0': X0, 'Xn': Xn,
                'Wn': Wn, 'norm_consts': norm_consts, 'default_prob': default_prob, 'pkT': pkT}
+
+    resultDir = args.results or 'np' + str(args.nportfolio) + '_nf' + str(args.nfirms) + '_T' + str(T) + '_ns' + str(n) + '_sp' + str(
+        args.startprice) + '_sv' + str(args.startvol) + '_alpha' + str(alpha[0]) + '_' + str(alpha[-1]) + '_' + str(len(alpha))
+    resultDir = 'results' + os.sep + resultDir
+    os.makedirs(resultDir, exist_ok=True)
+
     with open(resultDir + os.sep + 'output.pkl', 'wb') as pfile:
         pickle.dump(results, pfile)

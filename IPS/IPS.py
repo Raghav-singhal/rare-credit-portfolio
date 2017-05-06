@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import rv_discrete
 import warnings
-from tqdm import tqdm
+from tqdm import tqdm, tqdm_notebook
 
 # Xp, Wp - matrices of size numPortfolios x (2N+1). Current state and history.
 # Returns:
@@ -64,18 +64,26 @@ def mutation_step(Xn, params, A, B, covariancefn):
 # Returns Xn+1, Wn+1 - previous and current mutated state.
 
 
-def mutation(Xn, params, A, B, covariancefn, nFn):
+def mutation(Xn, params, A, B, covariancefn, tqdmParams = None):
     defaults = {'dt': 1e-4, 'Dt': 0.05, 'rho_sigma': -0.06, 'rho': 0.1,
                 'kappa': 3.5, 'sigmaHat': 0.4, 'r': 0.06, 'gamma': 0.7,
                 'sigma0': 0.4}
     for defkey in defaults.keys():
         params.setdefault(defkey, defaults[defkey])
+    tqdmDefaults  = {'nFn':0, 'noverbose':False, 'notebook':False}
+    if tqdmParams is None:
+        tqdmParams  = {}
+    for defkey in tqdmDefaults.keys():
+        tqdmParams.setdefault(defkey, tqdmDefaults[defkey])
+    tqdml = tqdm
+    if tqdmParams['notebook']:
+        tqdml = tqdm_notebook
     nTimesteps = int(params['Dt'] / params['dt'])
     if nTimesteps != params['Dt'] / params['dt']:
         warnings.warn(
             'dt does not evenly divide Dt so rounding num of steps to ' + str(nTimesteps))
     Wn = Xn.copy()
-    for _ in tqdm(range(nTimesteps), desc='mutation ' + str(nFn), position=2 * nFn + 1):
+    for _ in tqdml(range(nTimesteps), desc='mutation ' + str(tqdmParams['nFn']), position=2 * tqdmParams['nFn'] + 1, disable = tqdmParams['noverbose']):
         Xn = mutation_step(Xn, params, A, B, covariancefn)
     return Xn, Wn
 
