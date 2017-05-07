@@ -8,14 +8,14 @@ from multiprocessing import Pool,  freeze_support
 import os
 
 
-def runIPS(X0, params, n, alpha, barriers, tqdmParams):
+def runIPS(X0, params, n, alpha, barriers, Afn, Bfn, Cfn, tqdmParams):
     Xn = X0.copy()
     Wn = X0.copy()
     norm_consts = []
     for i in tqdm(range(n), desc='selection ' + str(tqdmParams['nFn']), position=2 * tqdmParams['nFn'],  disable=tqdmParams['noverbose']):
         Xn, nc = IPS.selection(Xn, Wn, alpha)
-        Xn, Wn = IPS.mutation(Xn, params, parametricFns.A,
-                              parametricFns.B, parametricFns.Cfn, tqdmParams)
+        Xn, Wn = IPS.mutation(Xn, params, Afn,
+                              Bfn, Cfn, tqdmParams)
         norm_consts.append(nc)
     norm_consts = np.array(norm_consts)
     default_prob, defcounts = IPS.estimator(
@@ -38,12 +38,18 @@ if __name__ == '__main__':
                         help='Granularity of mutation step in years. (Default: %(default)s)')
     parser.add_argument('--startprice', '-SP', default=90, type=float,
                         help='Initial price of assets (Default: %(default)s)')
+    parser.add_argument('--sigma0', '-S0', default=0.4, type=float,
+                        help='Idiosyncratic volatility. (Default: %(default)s)')
     parser.add_argument('--startvol', '-SV', default=0.4, type=float,
                         help='Initial stochastic volatility (Default: %(default)s)')
+    parser.add_argument('--rate', '-R', default=0.06, type=float,
+                        help='Risk free interest rate. (Default: %(default)s)')
     parser.add_argument('--alpha', nargs='*', default=[0.1], type=float,
                         help='alpha in potential function. Multiple values can be passed for averaging. (Default: %(default)s)')
     parser.add_argument('--barrier', default=36, type=float,
                         help='Barrier price for all assets (Default: %(default)s)')
+    parser.add_argument('--deterministicvol', '-DV', action='store_true',
+                        help='set to deterministic volatility only')
     parser.add_argument('--results', type=str,
                         help='Result directory to save to in results/ . Takes value based on parameters if unspecified')
     parser.add_argument('--jobs', type=int, default=4,
@@ -57,6 +63,9 @@ if __name__ == '__main__':
     if args.notebook:
         from tqdm import tqdm_notebook as tqdm
 
+    if args.deterministicvol:
+        args.startvol = 1
+
     initPrices = args.startprice * np.ones((args.nportfolio, args.nfirms))
     initVol = args.startvol * np.ones((args.nportfolio, 1))
     X0 = np.hstack((initVol, initPrices, initPrices))
@@ -67,7 +76,15 @@ if __name__ == '__main__':
     alpha = args.alpha
     barriers = args.barrier * np.ones(args.nfirms)
 
-    params = {'Dt': Dt, 'dt': args.mgranularity}
+    params = {'Dt': Dt, 'dt': args.mgranularity,
+              'sigma0': args.sigma0, 'r': args.rate}
+    Afn = parametricFns.A
+    Bfn = parametricFns.B
+    Cfn = parametricFns.Cfn
+    if args.deterministicvol:
+        params['kappa'] = 0
+        params['gamma'] = 0
+        Cfn = parametricFns.Cfn_no_stoch_vol
 
     Xn = []
     Wn = []
@@ -76,7 +93,7 @@ if __name__ == '__main__':
     defcounts = []
     with Pool(processes=args.jobs) as pool:
         multipleresults = [pool.apply_async(
-            runIPS, (X0, params, n, alpha[i], barriers, {'nFn': i, 'noverbose': args.noverbose, 'notebook': args.notebook})) for i in range(len(alpha))]
+            runIPS, (X0, params, n, alpha[i], barriers, Afn, Bfn, Cfn, {'nFn': i, 'noverbose': args.noverbose, 'notebook': args.notebook})) for i in range(len(alpha))]
         for i in range(len(alpha)):
             Xni, Wni, norm_constsi, default_probi, defcountsi = multipleresults[i].get(
             )
@@ -91,10 +108,10 @@ if __name__ == '__main__':
     #pkT = np.mean(np.vstack(default_prob), axis=0)
 
     results = {'args': args, 'params': params, 'alpha': alpha, 'X0': X0, 'Xn': Xn,
-               'Wn': Wn, 'norm_consts': norm_consts, 'default_prob': default_prob, 'pkT': pkT, 'defcounts': defcounts}
+               'Wn': Wn, 'norm_consts': norm_consts, 'default_prob': default_prob, 'pkT': pkT, 'defcounts': defcounts, 'barriers': barriers}
 
     resultDir = args.results or 'np' + str(args.nportfolio) + '_nf' + str(args.nfirms) + '_T' + str(T) + '_ns' + str(n) + '_sp' + str(
-        args.startprice) + '_sv' + str(args.startvol) + '_alpha' + str(alpha[0]) + '_' + str(alpha[-1]) + '_' + str(len(alpha))
+        args.startprice) + '_sv' + str(args.startvol) + '_sigma' + str(args.sigma0) + '_DV' + str(args.deterministicvol) + '_alpha' + str(alpha[0]) + '_' + str(alpha[-1]) + '_' + str(len(alpha))
     resultDir = 'results' + os.sep + resultDir
     os.makedirs(resultDir, exist_ok=True)
 
