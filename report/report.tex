@@ -1,0 +1,126 @@
+% arara: indent: {overwrite: yes}
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+% \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading nips_2016
+%
+% to avoid loading the natbib package, add option nonatbib:
+% \usepackage[nonatbib]{nips_2016}
+
+\usepackage[final]{nips_2016}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+% \usepackage[final]{nips_2016}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{physics}		 % Physics package for derivatives
+\usepackage{graphicx,float,caption,subcaption,tikz}
+\usepackage[nomarkers,figuresonly]{endfloat}
+\usepackage{listings}
+\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
+\usepackage{animate}
+\usepackage{multirow}
+\usepackage{pgffor}
+\usepackage{tabularx}
+
+\usepackage{amsmath}
+\usepackage{latexsym}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{array}
+\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
+
+
+\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mylilas}{RGB}{170,55,241}
+\captionsetup[table]{skip=10pt}
+
+\DeclareMathOperator*{\argmax}{\arg\max}
+\DeclareMathOperator*{\argmin}{\arg\min}
+\DeclareMathOperator*{\E}{\mathbb{E}}
+
+\bibliographystyle{abbrvnat}
+\graphicspath{ {images/}}
+
+\lstset{language=Python,%
+    basicstyle=\footnotesize\ttfamily,
+    breaklines=true,%
+    morekeywords={matlab2tikz},
+    keywordstyle=\color{blue},%
+    morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
+    identifierstyle=\color{black},%
+    stringstyle=\color{mylilas},
+    commentstyle=\color{mygreen},%
+    showstringspaces=false,%without this there will be a symbol in the places where there is a space
+    numbers=left,%
+    numberstyle={\tiny \color{black}},% size of the numbers
+    numbersep=9pt, % this defines how far the numbers are from the text
+    %emph=[1]{for,end,break},emphstyle=[1]\color{red}, %some words to emphasise
+    %emph=[2]{word1,word2}, emphstyle=[2]{style},    
+}
+
+\newcounter{codenum}
+\newcounter{imgnum}
+\makeatletter
+\newtoks\@tabtoks
+\newcommand\addtabtoks[1]{\global\@tabtoks\expandafter{\the\@tabtoks#1}}
+\newcommand\eaddtabtoks[1]{\edef\mytmp{#1}\expandafter\addtabtoks\expandafter{\mytmp}}
+\newcommand*\resettabtoks{\global\@tabtoks{}}
+\newcommand*\printtabtoks{\the\@tabtoks}
+\makeatother
+
+\newcommand*\diff{\mathop{}\!\mathrm{d}}
+\newcommand*\Diff[1]{\mathop{}\!\mathrm{d^#1}}
+\newcommand{\me}{\mathrm{e}}
+
+\title{Rare Event Simulation using Interacting Particle Systems for Rare Credit Portfolio Losses}
+
+% The \author macro works with any number of authors. There are two
+% commands used to separate the names and addresses of multiple
+% authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to
+% break the lines. Using \AND forces a line break at that point. So,
+% if LaTeX puts 3 of 4 authors names on the first line, and the last
+% on the second line, try using \AND instead of \And before the third
+% author name.
+
+\author{
+  Abhishek Shah \\
+  \texttt{ans556@nyu.edu}\\
+  Computer Science,  NYU
+  \And
+  Prithvi Krishna Gattamaneni\\
+  \texttt{pkg238@nyu.edu}\\
+  Computer Science,  NYU
+  \AND
+  Raghav Singhal\\
+  \texttt{rs4070@nyu.edu}\\
+  Mathematics, NYU
+  \And
+  Srivas Venkatesh \\
+  \texttt{sv1358@nyu.edu} \\
+  Computer Science,  NYU
+}
+
+\begin{document}
+
+\maketitle
+
+\section{Theory}
+\input{theory}
+\section{Algorithm}
+\input{algorithm}
+\section{Results}
+\input{resultsIPS}
+
+\end{document}
