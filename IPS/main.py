@@ -50,8 +50,8 @@ if __name__ == '__main__':
                         help='Barrier price for all assets (Default: %(default)s)')
     parser.add_argument('--deterministicvol', '-DV', action='store_true',
                         help='set to deterministic volatility only')
-    parser.add_argument('--results', type=str,
-                        help='Result directory to save to in results/ . Takes value based on parameters if unspecified')
+    parser.add_argument('--results', type=str, default='results',
+                        help='Result directory to save to in results. (Default: % (default)s)')
     parser.add_argument('--jobs', type=int, default=4,
                         help='Worker jobs in pool (Default: %(default)s)')
     parser.add_argument('--noverbose', action='store_true',
@@ -110,9 +110,9 @@ if __name__ == '__main__':
     results = {'args': args, 'params': params, 'alpha': alpha, 'X0': X0, 'Xn': Xn,
                'Wn': Wn, 'norm_consts': norm_consts, 'default_prob': default_prob, 'pkT': pkT, 'defcounts': defcounts, 'barriers': barriers}
 
-    resultDir = args.results or 'np' + str(args.nportfolio) + '_nf' + str(args.nfirms) + '_T' + str(T) + '_ns' + str(n) + '_sp' + str(
+    resultDir = 'np' + str(args.nportfolio) + '_nf' + str(args.nfirms) + '_T' + str(T) + '_ns' + str(n) + '_sp' + str(
         args.startprice) + '_sv' + str(args.startvol) + '_sigma' + str(args.sigma0) + '_DV' + str(args.deterministicvol) + '_alpha' + str(alpha[0]) + '_' + str(alpha[-1]) + '_' + str(len(alpha))
-    resultDir = 'results' + os.sep + resultDir
+    resultDir = args.results + os.sep + resultDir
     os.makedirs(resultDir, exist_ok=True)
 
     with open(resultDir + os.sep + 'output.pkl', 'wb') as pfile:
