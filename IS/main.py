@@ -4,15 +4,12 @@ import LIM
 import os
 import pickle
 """
-This main is for running Local Intensity Model 
+This main is for running Local Intensity Model
 """
-def runLIM(numPortfolios,numFirms,T,alpha,a,b):
+def runLIM(numPortfolios,numFirms,T,defaults):
     M = numPortfolios
     N = numFirms
-    params = {}
-    params['alpha'] = alpha
-    params['a'] = a
-    params['b'] = b
+    params = defaults
     X_t,X_kai,norm_consts = LIM.initialize(M,N)
     for n in range(N):
         W_t = X_t.copy()
@@ -53,7 +50,7 @@ if __name__ == '__main__':
     if args.notebook:
         from tqdm import tqdm_notebook as tqdm
     defaults = {'alpha':0.4,'a':0.01,'b':13}
-    X_t,X_kai,norm_consts = runLIM(args.nportfolio,args.nfirms,args.maturity,defaults['alpha'],defaults['a'],defaults['b'])
+    X_t,X_kai,norm_consts = runLIM(args.nportfolio,args.nfirms,args.maturity,defaults)
     pkT = LIM.estimator(args.nportfolio,args.nfirms,X_kai,norm_consts,defaults)
 
 
