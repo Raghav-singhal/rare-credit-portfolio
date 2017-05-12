@@ -10,18 +10,20 @@ def runLIM(numPortfolios,numFirms,T,defaults):
     M = numPortfolios
     N = numFirms
     params = defaults
-    X_t,X_kai,norm_consts = LIM.initialize(M,N)
+    X_t,X_chi,norm_consts = LIM.initialize(M,N)
     for n in range(N):
         W_t = X_t.copy()
-        W_kai = X_kai.copy()
-        Xn_t,Xn_kai,norm_const = LIM.selection(W_t,W_kai,M,params['alpha'],T)
-        Xn_t,Xn_kai = LIM.mutation(Xn_t,Xn_kai,M,N,T,params)
+        W_chi = X_chi.copy()
+        Xn_t,Xn_chi,norm_const = LIM.selection(W_t,W_chi,M,params['alpha'],T)
+        print Xn_t
+        Xn_t,Xn_chi = LIM.mutation(Xn_t,Xn_chi,M,N,T,params)
+        print Xn_t
         X_t = Xn_t.copy()
-        X_kai = Xn_kai.copy()
-        print X_t-W_t
+        X_chi = Xn_chi.copy()
+        #print X_t-W_t
         norm_consts[n+1] = norm_const
 
-    return X_t,X_kai,norm_consts
+    return X_t,X_chi,norm_consts
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -50,11 +52,11 @@ if __name__ == '__main__':
     if args.notebook:
         from tqdm import tqdm_notebook as tqdm
     defaults = {'alpha':0.4,'a':0.01,'b':13}
-    X_t,X_kai,norm_consts = runLIM(args.nportfolio,args.nfirms,args.maturity,defaults)
-    pkT = LIM.estimator(args.nportfolio,args.nfirms,X_kai,norm_consts,defaults)
+    X_t,X_chi,norm_consts = runLIM(args.nportfolio,args.nfirms,args.maturity,defaults)
+    pkT = LIM.estimator(args.nportfolio,args.nfirms,X_chi,norm_consts,defaults)
 
 
-    results = {'modelName':'LIM','args': args, 'params': defaults, 'X_t':X_t, 'X_kai':X_kai,
+    results = {'modelName':'LIM','args': args, 'params': defaults, 'X_t':X_t, 'X_chi':X_chi,
                'norm_consts': norm_consts, 'pkT': pkT}
     resultDir = args.results or 'np' + str(args.nportfolio) + '_nf' + str(args.nfirms) + '_T' + str(args.maturity) + '_alpha' + str(defaults['alpha'])
     resultDir = 'results' + os.sep + resultDir

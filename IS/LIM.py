@@ -12,10 +12,10 @@ def mutation_step((tn,Lt),T,N,params):
     else:
         return (T,Lt)
 
-def mutation(X_t,X_kai,M,N,T,params):
+def mutation(X_t,X_chi,M,N,T,params):
     for i in range(M):
-        X_t[i],X_kai[i] = mutation_step((X_t[i],X_kai[i]),T,N,params)
-    return X_t,X_kai
+        X_t[i],X_chi[i] = mutation_step((X_t[i],X_chi[i]),T,N,params)
+    return X_t,X_chi
 
 def Lambda_t(params,N,Lt):
     a = params['a']
@@ -27,15 +27,15 @@ def Lambda_t(params,N,Lt):
         scale_param = float(N)/(Lt*b)
         return a*scale_param*np.random.exponential(scale=scale_param)
 
-def selection(X_t,X_kai,M,alpha,T):
+def selection(X_t,X_chi,M,alpha,T):
     G = potential(X_t,M,alpha,T)
     norm_const = G.sum() / M
     probabilities = G / G.sum()
     sampled_indices = rv_discrete(
         values=(np.arange(M), probabilities)).rvs(size=M)
     X_t = X_t[sampled_indices]
-    X_kai = X_kai[sampled_indices]
-    return X_t,X_kai,norm_const
+    X_chi = X_chi[sampled_indices]
+    return X_t,X_chi,norm_const
 
 
 def potential(X_t,M,alpha,T):
@@ -47,14 +47,14 @@ def potential(X_t,M,alpha,T):
 
 def initialize(M,N):
     X_t = np.zeros(M)
-    X_kai = np.zeros(M)
+    X_chi = np.zeros(M)
     norm_consts = np.zeros(N+1)
-    return X_t,X_kai,norm_consts
+    return X_t,X_chi,norm_consts
 
-def estimator(M,N,X_kai,norm_consts,params):
+def estimator(M,N,X_chi,norm_consts,params):
     p = np.zeros(N+1)
     for i in range(M):
-        p[int(X_kai[i])] = p[int(X_kai[i])] + 1.0
+        p[int(X_chi[i])] = p[int(X_chi[i])] + 1.0
     print p
     p = np.exp(-1.0*params['alpha']*p)
     print p
