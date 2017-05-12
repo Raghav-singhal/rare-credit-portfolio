@@ -2,7 +2,10 @@ import argparse
 import numpy as np
 import IPS
 import parametricFns
-import pickle
+try:
+    import cPickle as pickle
+except:
+    import pickle
 from tqdm import tqdm
 from multiprocessing import Pool,  freeze_support
 import os
