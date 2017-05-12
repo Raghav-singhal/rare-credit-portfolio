@@ -21,16 +21,18 @@ def potential(Xp, Wp, alpha):
     return G
 
 # Xp, Wp - matrices of size numPortfolios x (2N+1). Current state and history.
+# alpha - chosen alpha paramter
+# potentialfn - function which returns the potential
 # Returns:
 # Xnew - matrix of size numPortfolios x (2N+1). Selected new values
 # norm_const - scalar normalization constant at this selection stage.
 # Needs to be accumulated.
 
 
-def selection(Xp, Wp, alpha):
+def selection(Xp, Wp, alpha, potentialfn=potential):
     numPortfolios = Xp.shape[0]
     n = int((Xp.shape[1] - 1) / 2)
-    G = potential(Xp, Wp, alpha)
+    G = potentialfn(Xp, Wp, alpha)
     norm_const = G.sum() / numPortfolios
     probabilities = G / G.sum()
     sampled_indices = rv_discrete(
@@ -114,4 +116,19 @@ def estimator(X0, Xn,  Wn, barrier, alpha, norm_consts):
         ndef_i = (ndefaults == i)
         defcounts[i] = ndef_i.sum()
         p[i] = np.sum(G * ndef_i) * normalization / M
+    return p, defcounts
+
+# X0 - numPortfolios x N matrix of initial state.
+# barrier - numpy array of size N for barrier prices of assets
+
+
+def MCestimator(Xn, barrier):
+    M = np.shape(Xn)[0]  # Number of portfolios
+    N = int((np.shape(Xn)[1] - 1) / 2)  # Number of assets
+    ndefaults = numDefaults(Xn[:, N + 1:], barrier)
+    defcounts = np.zeros(N + 1)
+    for i in range(N + 1):
+        ndef_i = (ndefaults == i)
+        defcounts[i] = ndef_i.sum()
+    p = defcounts / defcounts.sum()
     return p, defcounts
