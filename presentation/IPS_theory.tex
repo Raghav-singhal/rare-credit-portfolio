@@ -1,0 +1,47 @@
+\begin{frame}{Credit Portfolio Model}
+	\begin{itemize}
+		\item Model is based on a modified version Merton's model with the
+		      addition of a stochastic volatility term.
+		\item We consider $N$ assets in a portfolio each with a price $S_i(t)$
+		      at time $t$.
+	\end{itemize}
+	\begin{block}{Asset Evolution}
+		\begin{equation*}
+			dS_{i}(t) = rS_{i}(t)dt + \sigma_{i}\sigma(t)S_{i}(t)dW_{i}(t)
+		\end{equation*}
+		$r$ - risk free interest rate, $\sigma_i$ - Idiosyncratic volatility,
+		$W$ - Weiner process with the following correlation structure
+		\begin{equation*}
+			d \langle W_{i}, W_{j} \rangle_{t} = \rho_{ij}dt
+		\end{equation*}
+		The stochastic volatility $\sigma(t)$ evolves according to the SDE,
+		correlation structure
+		\begin{equation*}
+			\begin{split}
+				d\sigma(t) &= \kappa(\bar{\sigma} - \sigma(t)) dt + \gamma \sqrt{\sigma(t)} dW(t) \\
+				d \langle W_{i}, W \rangle_{t} &= \rho_{\sigma}dt
+			\end{split}
+		\end{equation*}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Model Implementation}
+	\begin{block}{Markov Chain State}
+		\begin{equation*}
+			X_{n} = \left( \sigma \left( n \Delta t \right), \left( S_i \left( n \Delta
+			t\right) \right)_{1 \leq i \leq N} , \min_{0 \leq m \leq n} \left( \left( S_i
+			\left( m \Delta t \right) \right) \right) \right)
+		\end{equation*}
+	\end{block}
+	\begin{itemize}
+		\item State $X_n$ is $2N+1$ dimensional.
+		\item Asset evolution done using Euler method with timestep granularity
+		      $\delta t$.
+		\item For default condition we use a barrier price $B_i$ going below
+		      which is treated as a default.
+		\item To increase sampling of these rare events we use IPS methodology
+		      with the potential function $G_{p}(Y_{p}) = \exp[-\alpha (V(X_p) -
+		      V(X_{p-1}))]$ where $V(X_p) = \sum_{i=1}^N \log (min_{0\leq m
+		      	\leq p}S_{i}(m \Delta t))$.
+	\end{itemize}
+\end{frame}
