@@ -1,0 +1,80 @@
+\begin{frame}{Stages of IPS}
+	\begin{itemize}
+		\item Involves 4 stages of operations.
+		\item Initialization of price, volatility.
+		\item $n$ loops of:
+		      \begin{itemize}
+		      	\item Selection stage to select paths that could lead to the
+		      	      rare event of higher defaults.
+		      	\item Mutation stage to evolve the selected paths as per the
+		      	      SDEs.
+		      \end{itemize}
+		\item Termination stage to collect result of previous stage and estimate
+		      default probabilities.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Initialization}
+	\begin{block}{Initial Value}
+		\begin{equation*}
+			\begin{split}
+				\hat{X}_0^{(j)} &= \left( \sigma(0), S_1(0), \cdots, S_N(0), S_1(0), \cdots, S_n(0) \right),  \quad 
+				\forall 1 \leq j\leq M                                                                    \\
+				\hat{W}_0^{(j)} &= \hat{X}_0^{(j)}
+			\end{split}
+		\end{equation*}
+	\end{block}
+	\begin{itemize}
+		\item All $M$ portfolios are started with the same price and volatility.
+		\item Initial minimum is same as initial price.
+		\item Initial history is same as current initialization.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Selection}
+	\begin{itemize}
+		\item Resample with replacement $M$ paths from input $M$ paths according
+		      to empirical distribution under the given Gibbs measure.
+		\item $\left( \hat{W}_p^{(j)}, \hat{X}_p^{(j)} \right)$ becomes $\left( \breve{W}_p^{(j)}, \breve{X}_p^{(j)}\right)$.
+	\end{itemize}
+	\begin{block}{Empirical distribution}
+		\begin{equation*}
+			\begin{split}
+				&\eta_{p}^{M}(dW,dX) = \frac{1}{M \hat{\eta}_{p}^{M}}\sum_{j=1}^{M}\exp\left[{\alpha(V(\hat{X}_{p}^{(j)}))-V(\hat{W}^{(j)}_{p})}\right] \times \delta_{(\hat{W}_p^{j},\hat{X}_p^{j})}(dW,dX) \\
+				&\text{Where}\\
+				&\hat{\eta}_{p}^{M} =
+				\frac{1}{M}\sum_{j=1}^{M}\exp\left[{\alpha(V(\hat{X}_{p}^{(j)}))-V(\hat{W}^{(j)}_{p})}\right]
+			\end{split}
+		\end{equation*}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Mutation}
+	\begin{itemize}
+		\item Evolve paths from $\breve{X}_p^{(j)}$ to $\hat{X}_{p+1}^{(j)}$.
+		\item Set $\hat{W}_{p+1}^{(j)} = \breve{X}_p^{(j)}$.
+		\item Evolve based on SDEs using Euler-Maruyama method with time step
+		      $\delta t$. Evolution is from $t_p$ to $t_{p+1}$ ($t_p + \Delta t$).
+		\item $\delta t \ll \Delta t$
+		\item True Dynamics.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Termination}
+	\begin{itemize}
+		\item Teminate at maturity time $T$ by running the selection, mutation
+		      step $n$ times. ($n \Delta t = T$)
+		\item Estimate default probability $p_k(T) = \mathbb{P}\left( L\left( T \right) = k
+		      \right)$ using formula below.
+	\end{itemize}
+	\begin{block}{Estimation}
+		\begin{equation*}
+			\begin{split}
+				&\hat{p}_{k}^{M}(T) = \left[ \frac{1}{M} \sum_{j=1}^{M} \mathbf{1}_{\lbrace f(\hat{X}_{n}^{(j)}) = k\rbrace
+						}\exp\left[{\alpha(V(\hat{W}^{(j)}) - V(\hat{X_{0}}))}\right]\right] \times \left[ \prod_{p=0}^{n-1} \hat{\eta}_{p}^{M}\right] \\
+						&\text{Where}\\
+						&f(X^{(j)}_n) = \sum_{i=1}^{N}\mathbf{1}_{\lbrace X^{(j)}_{n}(N + 1 + i)\leq B_{i}\rbrace}
+					\end{split}
+				\end{equation*}
+			\end{block}
+		\end{frame}

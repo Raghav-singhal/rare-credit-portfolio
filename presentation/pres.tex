@@ -18,8 +18,9 @@
 % You can uncomment the themes below if you would like to use a different
 % one:
 
-\usetheme{CambridgeUS}
-\usecolortheme{dolphin}
+\usetheme{Singapore}
+\usecolortheme{orchid}
+\setbeamerfont{block body}{size=\footnotesize}
 
 \usepackage[T1]{fontenc}
 \usepackage{amsfonts}       % blackboard math symbols
@@ -66,7 +67,7 @@
 \newcommand{\mW}[0]{\matr{W}}
 \newcommand{\mX}[0]{\matr{X}}
 
-\graphicspath{{./images/}}
+\graphicspath{{../report/images/}}
 
 \title{Rare Event Simulation using Interacting Particle Systems for Rare Credit Portfolio Losses}
 
@@ -127,7 +128,7 @@
 \begin{frame}{Outline}
 	The goal of our project is to highlight IPS models for rare event siulation
 	and estimation specifically in the context of Credit portfolio defaults.
-				
+															
 	To that effect we talk about the following:
 	\begin{itemize}
 		\item Interacting particle systems.
@@ -152,7 +153,10 @@
 \section{Merton's model}
 \subsection{Theory}
 \subsection{IPS Adaptation}
+\input{IPS_merton}
 \subsection{Results}
+\input{results_merton}
+
 
 % All of the following is optional and typically not needed. 
 \appendix
@@ -161,15 +165,16 @@
 
 \begin{frame}[allowframebreaks]
 	\frametitle<presentation>{References}
-	    
+												    
 	\small
+	\nocite{*}
 	\bibliography{../report/references}
 \end{frame}
 
 \begin{frame}
 	\centering
 	Thank you!
-	
+												
 	\huge
 	Questions?
 \end{frame}
