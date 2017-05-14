@@ -1,0 +1,44 @@
+We assume that we have a Markov chain $S=(S_n)_{0 \leq n \leq T}$. At each time step n, we have d correlated assets or sources. $S_n = (S_n^1,...,S_n^d) \in \mathit{E}$. We wish to understand the nature of probabilites of rare events which are of the form $L(T) > K$. $L(T)$ is a measure of the rare events which more generally can be expressed as below.
+$$
+\{L(T) \geq K\} = \{V_T(S_T)\geq K\} = \{V_T(S_0,...,S_T)\geq K\}
+$$
+$V(T)$ can be thought of as a real positive function that is a risk measure of these rare events.\\
+Calculating $\mathbb{P}(V_T(S_T) \geq K)$ through the standard Monte Carlo procedure are not feasible because of the difficulty faced in ensuring that we generate a large number of samples to realize the rare event. One partial remedy is to provide a tight upper bound based on large deviation ideas. For any $\lambda \geq 0$ we have :
+\begin{equation}
+\mathbb{P}(V_T(S_T)\geq K) = \mathbb{E}\left( \mathbf{1}_{V_T(S_T)\geq K} e^{\lambda V_T(S_T)} e^{-\lambda V_T(S_T)} \right) \leq
+e^{-\lambda K}\mathbb{E}\left( \mathbf{1}_{V_T(S_T)\geq K}e^{\lambda V_T(S_T)} \right)
+\end{equation}
+If we denote $\mathbb{E^{\lambda}}$ the expectation under the probablity $\mathbb{P}^{(\lambda)}$ defined by
+$$d\mathbb{P}^{(\lambda)} \propto e^{\lambda V_T(S_T)}d\mathbb{P}$$
+we get 
+$$\mathbb{E}\left( \mathbf{1}_{V_T(S_T)\geq K}e^{\lambda V_T(S_T)}  \right) = \mathbb{E}^{(\lambda)}\left(\mathbf{1}_{V_T(S_T)\geq K}\right)\mathbb{E}\left(e^{\lambda V_T(S_T)}\right)$$
+and we know that
+$$\mathbb{E}^{(\lambda)}\left(\mathbf{1}_{V_T(S_T)\geq K}\right)\leq 1 $$
+from which we get
+\begin{equation}
+\mathbb{P}\left(V_T(S_T) \geq K\right) \leq e^{-sup_{\lambda\geq 0}(\lambda K - \Lambda(\lambda))}
+\end{equation}
+where $\Lambda(\lambda)$ is the Fenchel Transformation which is $\log (\mathbb{E}(\lambda V_T(S_T)))$.\\
+Examining the above, we observe that the desired probability can be approximated by searching for a proper $\lambda$. This large deviation type approach is widely used, but in the above form, it requires extensive calculations in order to obtain a reasonable approximation of the desired probability.\\
+
+Del Moral and Garnier provide in $TODO$ a zero bias estimate with interacting particle systems. The approach is to construct a genealofical tree based model instead of the above large deviation type inequality.
+Using the same change of measure from $\mathbb{P}$ to $\mathbb{P}^{(\lambda)}$ we can say that the target probability
+$$\mathbb{P}(V_T(S_T) \geq K) = \mathbb{E}\left( \mathbf{1}_{V_T(S_T) \geq K}e^{\lambda V_T(S_T)}e^{-\lambda V_T(S_T)} \right)$$
+can be rewritten as
+$$\mathbb{E}^{(\lambda)} \left(  \mathbf{1}_{V_T(S_T) \geq K} e^{\lambda V_T(S_T)} \right) \mathbb{E} \left(e^{\lambda V_T(S_T)}\right) = 
+\mathbb{E}^{(\lambda)}(f_T(S_T)) \mathbb{E}(e^{\lambda V_T(S_T)})  $$
+where $f_t(S_T) := \mathbf{1}_{V_T(S_T) \geq K}e^{\lambda V_T(S_T)} \mathbb{E}\left(e^{\lambda V_T(S_T)}\right) $. With the convention that $V_0 = 0$, we get the following decomposition
+$$e^{\lambda w V_T(S_T)} \equiv \prod_{p=1}^{T} e^{\lambda (V_p(S_p) - V_{p-1}(S_{p-1}))}$$
+
+By using the notation $$\mathcal{X}_k = (S_k, S_{k+1})$$ for $0 \leq k < T$, the above produce can be rewritten as
+
+$$\prod_{p=1}^{T} G_{p-1}(\mathcal{X}_{p-1})$$ where
+$$G_{p-1}(\mathcal{X}_{p-1}) := e^{\lambda (V_p(S_p) - V_{p-1}(S_{p-1}))}$$
+
+Using the notation that $F_T(\mathcal{X}_T) = f_T(S_T)$ we get
+\begin{equation}
+\mathbb{E}^{(\lambda)}(f_T(S_T)) = \frac{\mathbb{E}(F_T(\mathcal{X}_T)\prod_{p=1}^{T}G_p(\mathcal{X}_p))}{\mathbb{E}(\prod_{p=1}^{T}G_p(\mathcal{X}_p))} := \eta_T(F_T)
+\end{equation}
+
+These quanitites above can be approximated efficiently by interacting particle systems.
+
