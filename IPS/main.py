@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 import IPS
 import parametricFns
+import LIM
 try:
     import cPickle as pickle
 except:
@@ -10,12 +11,12 @@ from tqdm import tqdm
 from multiprocessing import Pool,  freeze_support
 import os
 
-
 def runIPS(X0, params, n, alpha, barriers, Afn, Bfn, Cfn, tqdmParams):
+    print("Estimating using Merton IPS")
     Xn = X0.copy()
     Wn = X0.copy()
     norm_consts = []
-    for i in tqdm(range(n), desc='selection ' + str(tqdmParams['nFn']), position=2 * tqdmParams['nFn'],  disable=tqdmParams['noverbose']):
+    for i in tqdm(range(n), desc='Mertons Model selection ' + str(tqdmParams['nFn']), position=2 * tqdmParams['nFn'],  disable=tqdmParams['noverbose']):
         Xn, nc = IPS.selection(Xn, Wn, alpha)
         Xn, Wn = IPS.mutation(Xn, params, Afn,
                               Bfn, Cfn, tqdmParams)
@@ -27,12 +28,47 @@ def runIPS(X0, params, n, alpha, barriers, Afn, Bfn, Cfn, tqdmParams):
 
 
 def runMC(X0, params, n, alpha, barriers, Afn, Bfn, Cfn, tqdmParams):
+    print("Estimating using Merton Simple Monte Carlo")
     Xn = X0.copy()
-    Wn = X0.copy()
     Xn, _ = IPS.mutation(Xn, params, Afn, Bfn, Cfn, tqdmParams)
     default_prob, defcounts = IPS.MCestimator(Xn, barriers)
     return Xn, None, None, default_prob, defcounts
 
+def runLIMMC(X_0, params, n, alpha, barriers, Afn, Bfn, Cfn, tqdmParams):
+    print("Estimating using LIM Simple Monte Carlo")
+    X_t = X_0.copy()
+    X_chi = X_0.copy()
+    params['alpha'] = alpha
+    N = params['numFirms']
+    T = params['T']
+    for n in tqdm(range(N)):
+        W_t = X_t.copy()
+        W_chi = X_chi.copy()
+        Xn_t,Xn_chi = LIM.mutation(W_t,W_chi,params)
+        X_t = Xn_t.copy()
+        X_chi = Xn_chi.copy()
+    default_prob,def_counts = LIM.MCestimator(X_chi,norm_consts,params)
+    return X_t,X_chi, None, default_prob, defcounts
+
+
+def runLIM(X_0, params, n, alpha, barriers, Afn, Bfn, Cfn, tqdmParams):
+    X_t = X_0.copy()
+    X_chi = X_0.copy()
+    params['alpha'] = alpha
+    N = params['numFirms']
+    T = params['T']
+    norm_consts = []
+    for n in tqdm(range(N),desc='Local Initialization Model selection ' + str(tqdmParams['nFn']),position=2 * tqdmParams['nFn']):
+        W_t = X_t.copy()
+        W_chi = X_chi.copy()
+        Xn_t,Xn_chi,norm_const = LIM.selection(W_t,W_chi,params)
+        Xn_t,Xn_chi = LIM.mutation(Xn_t,Xn_chi,params)
+        X_t = Xn_t.copy()
+        X_chi = Xn_chi.copy()
+        norm_consts.append(norm_const)
+    norm_consts = np.array(norm_consts)
+    default_prob,defcounts = LIM.estimator(X_chi,norm_consts,params)
+    return X_t,X_chi, norm_consts, default_prob, defcounts
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -62,7 +98,9 @@ if __name__ == '__main__':
     parser.add_argument('--deterministicvol', '-DV', action='store_true',
                         help='set to deterministic volatility only')
     parser.add_argument('--mconly', '-MC', action='store_true',
-                        help='Use MC sampling only')
+                        help='Use MC sampling only otherwise normally runs IPS')
+    parser.add_argument('--lim','-LIM',action='store_true',
+                        help='Set the model to local intensity model')
     parser.add_argument('--results', type=str, default='results',
                         help='Result directory to save to in results. (Default: % (default)s)')
     parser.add_argument('--jobs', type=int, default=4,
@@ -71,10 +109,17 @@ if __name__ == '__main__':
                         help="Don't output any progress")
     parser.add_argument('--notebook', action='store_true',
                         help="running in notebook")
+    parser.add_argument('--a','-a',type=float, default=0.01,
+                        help="Parameter of lambda function in LIM (Default: %(default)s)")
+    parser.add_argument('--b','-b',type=float, default=13,
+                        help="Parameter of lambda function in LIM (Default: %(default)s)")
+
     args = parser.parse_args()
 
     if args.notebook:
         from tqdm import tqdm_notebook as tqdm
+    T = args.maturity
+    alpha = args.alpha
 
     if args.deterministicvol:
         args.startvol = 1
@@ -82,34 +127,46 @@ if __name__ == '__main__':
     initPrices = args.startprice * np.ones((args.nportfolio, args.nfirms))
     initVol = args.startvol * np.ones((args.nportfolio, 1))
     X0 = np.hstack((initVol, initPrices, initPrices))
-
     n = args.nselection
-    T = args.maturity
     Dt = T / n
-    alpha = args.alpha
     barriers = args.barrier * np.ones(args.nfirms)
-    runFn = runIPS
-    if args.mconly:
-        runFn = runMC
-        alpha = [1]
-        Dt = T
-        n = 1
 
-    params = {'Dt': Dt, 'dt': args.mgranularity,
-              'sigma0': args.sigma0, 'r': args.rate}
+
+    print(args.mconly)
+
+    if args.lim:
+        runFn = runLIM
+        X0 = np.zeros(args.nportfolio)
+        params = {'a':args.a,'b':args.b,'numFirms':args.nfirms,'T':T}
+        if args.mconly:
+            runFn = runLIMMC
+            alpha = [1]
+    else:
+        runFn = runIPS
+        params = {'Dt': Dt, 'dt': args.mgranularity,
+                  'sigma0': args.sigma0, 'r': args.rate}
+        if args.mconly:
+            runFn = runMC
+            alpha = [1]
+            Dt = T
+            n = 1
+
+
+
     Afn = parametricFns.A
     Bfn = parametricFns.B
     Cfn = parametricFns.Cfn
-    if args.deterministicvol:
+    if args.deterministicvol and not args.lim:
         params['kappa'] = 0
         params['gamma'] = 0
         Cfn = parametricFns.Cfn_no_stoch_vol
 
-    Xn = []
-    Wn = []
+    Xn = [] #In case of LIM, Xn is time array X_t(t in markov process)
+    Wn = [] #In case of LIM, Wn is chi array X_chi(Lt in markov process)
     norm_consts = []
     default_prob = []
     defcounts = []
+    #runFn(X0,params,n,None,barriers,Afn,Bfn,Cfn,None)
     with Pool(processes=args.jobs) as pool:
         multipleresults = [pool.apply_async(
             runFn, (X0, params, n, alpha[i], barriers, Afn, Bfn, Cfn,
@@ -126,13 +183,21 @@ if __name__ == '__main__':
     maxDefAlphaInd = np.argmax(np.vstack(defcounts), axis=0)
     pkT = np.vstack(default_prob)[maxDefAlphaInd,
                                   np.arange(maxDefAlphaInd.shape[0])]
-    #pkT = np.mean(np.vstack(default_prob), axis=0)
+    pkT = np.mean(np.vstack(default_prob), axis=0)
 
     results = {'args': args, 'params': params, 'alpha': alpha, 'X0': X0, 'Xn': Xn,
                'Wn': Wn, 'norm_consts': norm_consts, 'default_prob': default_prob,
                'pkT': pkT, 'defcounts': defcounts, 'barriers': barriers}
 
-    resultDir = 'np' + str(args.nportfolio) + '_nf' + str(args.nfirms) + '_T' \
+    if args.lim:
+        modelName = "LIM"
+        resultDir = modelName+'_np' + str(args.nportfolio) + '_nf' + str(args.nfirms) + '_T' \
+                + str(T) + '_MC' + str(args.mconly) + '_alpha' \
+                + str(alpha[0]) + '_' + str(alpha[-1]) + '_' + str(len(alpha)) + '_b'+str(b)
+
+    else:
+        modelName = "Merton"
+        resultDir = modelName+'_np' + str(args.nportfolio) + '_nf' + str(args.nfirms) + '_T' \
                 + str(T) + '_ns' + str(n) + '_sp' + str(args.startprice) + '_sv' \
                 + str(args.startvol) + '_sigma' + str(args.sigma0) + '_DV' \
                 + str(args.deterministicvol) + '_MC' + str(args.mconly) + '_alpha' \

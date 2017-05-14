@@ -3,27 +3,41 @@ import argparse
 import LIM
 import os
 import pickle
+from tqdm import tqdm
 """
 This main is for running Local Intensity Model
 """
-def runLIM(numPortfolios,numFirms,T,defaults):
+def initialize(M,N):
+    X_t = np.zeros(M)
+    X_chi = np.zeros(M)
+    norm_consts = np.zeros(N)
+    return X_t,X_chi,norm_consts
+
+def runLIM(X_t,X_chi,norm_consts,numPortfolios,numFirms,T,params,alpha):
     M = numPortfolios
     N = numFirms
-    params = defaults
+    params['alpha'] = alpha
     X_t,X_chi,norm_consts = LIM.initialize(M,N)
-    for n in range(N):
+    for n in tqdm(range(N)):
         W_t = X_t.copy()
         W_chi = X_chi.copy()
         Xn_t,Xn_chi,norm_const = LIM.selection(W_t,W_chi,M,params['alpha'],T)
-        print Xn_t
+        print norm_const
         Xn_t,Xn_chi = LIM.mutation(Xn_t,Xn_chi,M,N,T,params)
-        print Xn_t
         X_t = Xn_t.copy()
         X_chi = Xn_chi.copy()
         #print X_t-W_t
-        norm_consts[n+1] = norm_const
+        norm_consts[n] = norm_const
 
     return X_t,X_chi,norm_consts
+
+def runMC(numPortfolios,numFirms,T,params,alpha):
+    Xn = X0.copy()
+    Wn = X0.copy()
+    Xn, _ = IPS.mutation(Xn, params, Afn, Bfn, Cfn, tqdmParams)
+    default_prob, defcounts = IPS.MCestimator(Xn, barriers)
+    return Xn, None, None, default_prob, defcounts
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -40,6 +54,8 @@ if __name__ == '__main__':
                         help='Result directory to save to in results/ . Takes value based on parameters if unspecified')
     parser.add_argument('--jobs', type=int, default=4,
                         help='Worker jobs in pool (Default: %(default)s)')
+    parser.add_argument('--b','-b', type=float, default=13.0)
+    parser.add_argument('--a','-a', type=float, default=0.4)
     parser.add_argument('--noverbose', action='store_true',
                         help="Don't output any progress")
     parser.add_argument('--notebook', action='store_true',
@@ -48,11 +64,16 @@ if __name__ == '__main__':
                          help="Name of the model to estimate")
     args = parser.parse_args()
 
-    args.nportfolio
     if args.notebook:
         from tqdm import tqdm_notebook as tqdm
-    defaults = {'alpha':0.4,'a':0.01,'b':13}
-    X_t,X_chi,norm_consts = runLIM(args.nportfolio,args.nfirms,args.maturity,defaults)
+
+
+    params['a'] = args.a
+    params['b'] = args.b
+    alphas = args.alpha
+
+    X_t,X_chi,norm_consts = initialize(args.nportfolio,arg.nfirms)
+    X_t,X_chi,norm_consts = runLIM(args.nportfolio,args.nfirms,args.maturity,params,alpha)
     pkT = LIM.estimator(args.nportfolio,args.nfirms,X_chi,norm_consts,defaults)
 
 
