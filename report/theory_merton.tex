@@ -1,0 +1,107 @@
+This is a model for structural credit risk based on Merton's model with a
+stochastic volatility term. We then apply IPS system on this model to estimate
+the rare default probabilities as described in \cite{CarmonaIPS}. The details of
+the model and application of IPS to this model is mentioned below.
+\subsubsection{Credit Portfolio Model}
+Given a portfolio of credit instruments related to $N$ firms, where each 
+underlying asset evolves according to the following SDE:
+
+\begin{equation}
+	\label{eq:merton_asset_sde}
+	dS_{i}(t) = rS_{i}(t)dt + \sigma_{i}\sigma(t)S_{i}(t)dW_{i}(t)
+\end{equation}
+
+where $r$ is the risk-free interest rate, $\sigma_{i}$
+is a non-random volatility factor, and the correlation structure of the driving 
+Wiener processes $W_{i}$ is given by:
+\begin{equation}
+	d \langle W_{i}, W_{j} \rangle_{ t} = \rho_{ij} dt
+\end{equation}
+
+and $\sigma(t)$ evolves according to another stochastic differential equation:
+\begin{equation}
+	\label{eq:merton_volatility_sde}
+	d\sigma(t) = \kappa(\bar{\sigma} - \sigma(t)) dt + \gamma \sqrt{\sigma(t)} dW(t)
+\end{equation}
+where $\kappa,\bar{\sigma},\gamma$ are constants and the Wiener Process 
+satisfies $\forall i = 1,2.....,N$:
+\begin{equation}
+	d \langle W_{i}, W \rangle _{t} = \rho_{\sigma }dt
+\end{equation}
+
+Now, for each asset we take a deterministic barrier, $B_{i}(t)$, or in other 
+words a threshold , so that if the asset price falls under that barrier price 
+at any time, the firm defaults. We then define a stopping time $\tau_{i}$:
+
+\begin{equation}
+	\tau_i = inf\left\lbrace t \geq 0 : S_{i}(t) \leq B_{i}(t) \right\rbrace
+\end{equation}
+
+We now define the Portfolio Loss Function $L(t)$ as the number of defaults till 
+a given time $t$:
+\begin{equation}
+	L(t) = \sum_{i =0}^{n} \mathbf{1}_{\lbrace\tau_{i} \leq t \rbrace}
+\end{equation}
+
+Since the spreads of CDO tranches are derived from the knowledge of a finite
+number of expectations of the form:
+\begin{equation}
+	\mathbf{E}[(L(T)-K)^{+}]
+\end{equation}
+where $T$ is the coupon payment date and $K$ is an acceptable number of defaults, 
+beyond which we start accumulating losses. So to evaluate such expectation, we 
+estimate the probabilities of default. For that purpose, we evaluate 
+$\forall k = 0,1,.....,N$
+\begin{equation}
+	\mathbb{P}(L(T)=k) = \mathbf{p}_{k}(T)
+\end{equation}
+
+\subsubsection{Discretization of the Model}
+For the implementation of our algorithm and for computational efficiency we 
+select two time step, $\Delta t = \frac{1}{20}$ which is used to perform the 
+selection step, and $\delta t = 10^{-3}$ which will be used in the Euler Step.
+
+The Markov Chain that we simulate is given as ( Note that $X_n$ is $2N + 1$ dimensional):
+\begin{equation}
+	\label{eq:merton_markov_chain}
+	X_{n} = \left( \sigma \left( n \Delta t \right), \left( S_i \left( n \Delta
+	t\right) \right)_{1 \leq i \leq N} , \min_{0 \leq m \leq n} \left( \left( S_i
+	\left( m \Delta t \right) \right) \right) \right)
+\end{equation}
+
+A remarkable and distinctive feature of the Interacting Particle System approach 
+is that the evolution dynamics of the underlying process is preserved, that is 
+the Markov Chain $X_n$ follows the same evolution dynamics as the continuous Model.
+
+We also take a constant Barrier, $B_i =36$, and define the stopping time $\tau_i$ as :
+
+\begin{equation}
+	\tau_i = \min \{ n \geq 0 : S_i(n \Delta t) \leq B_i \}
+\end{equation}
+
+Now, we define the potential function such that we assign more weight to portfolios 
+with lower values, that is we assign more weight to rare events so the likelihood 
+of defaults increases. The potential is a function of $X_p$ and another 
+parameter $\alpha > 0$:
+\begin{equation}
+	\label{eq:merton_potential}
+	G_{p}(Y_{p}) = \exp[-\alpha (V(X_p) - V(X_{p-1}))]
+\end{equation}
+
+where $V(X_p) = \sum_{i=1}^N \log (min_{0\leq m  \leq p}S_{i}(m \Delta t))$ 
+so the potential can be written as:
+\begin{equation}
+	G_{p}(Y_{p})= \exp\left[ -\alpha \sum_{i=1}^{N}\log\frac{min_{0\leq m  \leq p}
+		S_{i}(m \Delta t)}{min_{0\leq m  \leq p - 1}S_{i}(m \Delta t)}\right]
+\end{equation}
+
+where $Y_{p} =(X_{0},X_{1},...,X_{p})$ but we only need the last two values 
+not the earlier values. Notice that different values of $\alpha$ will give 
+different Loss Distributions $\mathbb{P}(L(T) = k)$ for all $k$, because in 
+the selection step those portfolios with lower number of defaults are assigned 
+a lower weight leading to different number of defaults in each portfolio. The 
+choice of the potential function and the parameter $\alpha$ lead to enough 
+number of sample paths with large number of defaults even if the number of 
+samples is significantly lower than what would be required by a plain Monte 
+Carlo simpler. We however follow an idea mentioned in 
+\cite{carmona2009importance}, where the best $\alpha$ is selected for each $k$.
