@@ -193,7 +193,7 @@ if __name__ == '__main__':
         modelName = "LIM"
         resultDir = modelName+'_np' + str(args.nportfolio) + '_nf' + str(args.nfirms) + '_T' \
                 + str(T) + '_MC' + str(args.mconly) + '_alpha' \
-                + str(alpha[0]) + '_' + str(alpha[-1]) + '_' + str(len(alpha)) + '_b'+str(b)
+                + str(alpha[0]) + '_' + str(alpha[-1]) + '_' + str(len(alpha)) + '_b'+str(args.b)
 
     else:
         modelName = "Merton"
