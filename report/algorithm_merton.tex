@@ -1,0 +1,70 @@
+\subsection{IPS Algorithm for Modified Merton's Model}
+We let $\Delta t = \frac{T}{n}$ and divide the Time interval $[0,T]$ in to equal 
+intervals. We denote the chain $X_p = \tilde{X}_{\frac{pT}{n}}$, where $\tilde{X}$ 
+evolves according to the continuous time dynamics,and denote the whole history of 
+the chain as $Y_{p} =(X_{0},X_{1},...,X_{p})$. We use the potential function 
+defined in the equation (\ref{eq:merton_potential}). And we select a smaller 
+time step to calculate the Euler Step, and for our experiment we have chosen 
+$\delta t = 10^{-3}$.
+
+Also due to the form of the potential function, we do not have to track the 
+entire history of the particle, only its current value $X_p$ and that of its 
+"parent" $X_{p-1}$, which is denoted as $\hat{W}_p$ in the following description.
+
+\subsubsection{Initialization}
+We take $M$ particles, where each particle represents a complete portfolio, 
+with identical initial values. So $\forall j \in \{,1,..,M\},$
+\begin{equation}
+	\hat{X}_0^{j} = \left( \sigma(0), \left( S_1(0), \cdots, S_N(0) \right)_{1 \leq i \leq N} , 
+	\left( S_1(0), \cdots, S_N(0) \right) \right)
+\end{equation}
+
+And we define the initial parent $\hat{W}_0^{j}=\hat{X}_0^{j}$.
+
+\subsubsection{Selection Stage}
+Suppose at time $p$ we have a set of $M$ particles, $(\hat{W}_p^{j},\hat{X}_p^{j})$
+, with $1 \leq j \leq M$. We then compute a normalization constant $\hat{\eta}_{p}^{M}$ as:
+\begin{equation}
+	\hat{\eta}_{p}^{M} = \frac{1}{M} \sum_{j=1}^{M} \exp \left[ \alpha \left( 
+	V(\hat{X}_{p}^{(j)}) \right) - V(\hat{W}^{(j)}_{p}) \right]
+\end{equation}
+
+Then we choose $M$ independent samples using the following distribution:
+
+\begin{equation}
+	\eta_{p}^{M} (dW,dX) = \frac{1}{M \hat{\eta}_{p}^{M}} \sum_{j=1}^{M} 
+	\exp \left[ \alpha \left( V(\hat{X}_{p}^{(j)}) \right) - V(\hat{W}^{(j)}_{p}) 
+	\right] \times \delta_{(\hat{W}_p^{j},\hat{X}_p^{j})} (dW,dX)
+\end{equation}
+
+The particles selected are then denoted as $(\breve{W}_p^{j},\breve{X}_p^{j})$.
+
+\subsubsection{Mutation Stage}
+This stage sets the IPS apart from other importance sampling methods, as we use 
+the exact dynamics of the model to sample points. We chose the Euler-Maruyama 
+method to solve for the Asset Prices and the Stochastic Volatility with the 
+time step $\delta t$ mentioned above.
+
+For each particle $(\breve{W}_p^{j},\breve{X}_p^{j})$, we evolve it using the 
+Euler-Maruyama scheme from $t_p$ to $t_{p+1}$, so $\breve{X}_p^{j}$ becomes $\hat{X}_{p+1}^{j}$.
+Note that, each particle, that is a portfolio, is evolved independently.
+
+\subsubsection{Termination Stage}
+At the Maturity Time, we compute the number of losses in each particle, 
+that is a portfolio, for all $M$ particles by computing the function $f_n$ 
+defined as follows:
+
+\begin{equation}
+	f(X^{(j)}_n) = \sum_{i=1}^{N}\mathbf{1}_{\lbrace X^{(j)}_{n}(N + 1 + i)\leq B_{i}\rbrace}
+\end{equation}
+
+where the last $N$ components of $X_n$ are the minimums of the asset values. 
+The estimates $\hat{p}_k^M(T)$ for the number of defaults, $\mathbf{p}_k(T) = \mathbb{P}(L(T)=k)$
+, is defined as:
+\begin{equation}
+	\hat{p}_{k}^{M}(T) = \left[ \frac{1}{M} \sum_{j=1}^{M} \mathbf{1}_{\lbrace 
+			f(\hat{X}_{n}^{(j)}) = k \rbrace } \exp \left[ \alpha \left( V(\hat{W}^{(j)}) -
+		V(\hat{X_{0}}) \right) \right] \right] \times \left[ \prod_{p=0}^{n-1} 
+			\hat{\eta}_{p}^{M} \right]
+		\end{equation}
+		As explained in the theory section, the above estimator is an unbiased estimator.
