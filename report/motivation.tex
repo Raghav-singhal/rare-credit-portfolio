@@ -25,9 +25,9 @@ Del Moral and Garnier provide in \cite{delmoral2005} a zero bias estimate with i
 Using the same change of measure from $\mathbb{P}$ to $\mathbb{P}^{(\lambda)}$ we can say that the target probability
 $$\mathbb{P}(V_T(S_T) \geq K) = \mathbb{E}\left( \mathbf{1}_{\{V_T(S_T) \geq K\}}e^{\lambda V_T(S_T)}e^{-\lambda V_T(S_T)} \right)$$
 can be rewritten as
-$$\mathbb{E}^{(\lambda)} \left(  \mathbf{1}_{\{V_T(S_T) \geq K\}} e^{\lambda V_T(S_T)} \right) \mathbb{E} \left(e^{\lambda V_T(S_T)}\right) = 
+$$\mathbb{E}^{(\lambda)} \left(  \mathbf{1}_{\{V_T(S_T) \geq K\}} e^{-\lambda V_T(S_T)} \right) \mathbb{E} \left(e^{\lambda V_T(S_T)}\right) = 
 \mathbb{E}^{(\lambda)}(f_T(S_T)) \mathbb{E}(e^{\lambda V_T(S_T)})  $$
-where $f_t(S_T) := \mathbf{1}_{\{V_T(S_T) \geq K\}}e^{\lambda V_T(S_T)} \mathbb{E}\left(e^{\lambda V_T(S_T)}\right) $. With the convention that $V_0 = 0$, we get the following decomposition
+where $f_t(S_T) := \mathbf{1}_{\{V_T(S_T) \geq K\}}e^{-\lambda V_T(S_T)} $. With the convention that $V_0 = 0$, we get the following decomposition
 $$e^{\lambda V_T(S_T)} \equiv \prod_{p=1}^{T} e^{\lambda (V_p(S_p) - V_{p-1}(S_{p-1}))}$$
 
 By using the notation $$\mathcal{X}_k = (S_k, S_{k+1})$$ for $0 \leq k < T$, the above produce can be rewritten as
