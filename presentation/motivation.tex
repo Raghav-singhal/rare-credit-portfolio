@@ -1,0 +1,29 @@
+\begin{frame}
+
+Given a Markov chain $S=(S_n)_{0 \leq n \leq T}$. At each n, we have $d$ correlated assets, $S_n = (S_n^1,...,S_n^d) \in \mathit{E}$. We wish to understand the nature of probabilities of rare events which are of the form $L(T) > K$, where $L(T)$ is the number of defaults at the maturity time $T$, can be expressed as below.
+$$
+\{L(T) \geq K\} = \{V_T(S_T)\geq K\} = \{V_T(S_0,...,S_T)\geq K\}
+$$
+$V(T)$ can be thought of as a real positive function that is a risk measure of these rare events.\\
+
+$$\mathbb{P}(V_T(S_T) \geq K) = \mathbb{E}\left( \mathbf{1}_{\{V_T(S_T) \geq K\}}e^{\lambda V_T(S_T)}e^{-\lambda V_T(S_T)} \right)$$
+can be rewritten as
+$$\mathbb{E}^{(\lambda)} \left(  \mathbf{1}_{\{V_T(S_T) \geq K\}} e^{-\lambda V_T(S_T)} \right) \mathbb{E} \left(e^{\lambda V_T(S_T)}\right) = 
+\mathbb{E}^{(\lambda)}(f_T(S_T)) \mathbb{E}(e^{\lambda V_T(S_T)})  $$
+where $f_t(S_T) := \mathbf{1}_{\{V_T(S_T) \geq K\}}e^{-\lambda V_T(S_T)} $. 
+\end{frame}
+
+\begin{frame}
+With the convention that $V_0 = 0$, we get the following decomposition
+$$e^{\lambda V_T(S_T)} \equiv \prod_{p=1}^{T} e^{\lambda (V_p(S_p) - V_{p-1}(S_{p-1}))}$$
+
+By using the notation $$\mathcal{X}_k = (S_k, S_{k+1})$$ for $0 \leq k < T$, the above produce can be rewritten as
+
+$$\prod_{p=1}^{T} G_{p-1}(\mathcal{X}_{p-1})$$ where
+$$G_{p-1}(\mathcal{X}_{p-1}) := e^{\lambda (V_p(S_p) - V_{p-1}(S_{p-1}))}$$
+
+Using the notation that $F_T(\mathcal{X}_T) = f_T(S_T)$ we get
+\begin{equation}
+	\mathbb{E}^{(\lambda)}(f_T(S_T)) = \frac{\mathbb{E}(F_T(\mathcal{X}_T)\prod_{p=1}^{T}G_p(\mathcal{X}_p))}{\mathbb{E}(\prod_{p=1}^{T}G_p(\mathcal{X}_p))} := \eta_T(F_T)
+\end{equation}
+\end{frame}
