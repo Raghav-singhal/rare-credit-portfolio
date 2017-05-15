@@ -105,3 +105,42 @@ number of sample paths with large number of defaults even if the number of
 samples is significantly lower than what would be required by a plain Monte 
 Carlo simpler. We however follow an idea mentioned in 
 \cite{carmona2009importance}, where the best $\alpha$ is selected for each $k$.
+
+\subsubsection{Single Asset Constant Volatility Analysis}
+\label{subsubsec:single_asset}
+The simplest case of the above model is a case of single asset and no stochastic
+volatility. As we know the exact solution for Geometric Brownian Motion, we can 
+obtain the hitting time distribution analytically. This can then be used to
+compare against estimated values. The solution for the Geometric Brownian Motion
+is as follows.
+\begin{equation}
+	S_t = S_0 \exp \left( \left( r - \frac{\sigma^2}{2} \right) t  + \sigma W_t\right)
+\end{equation}
+which implies that
+\begin{equation}
+	\begin{split}
+		\mathbb{P}[\tau_B \leq T] = \mathbb{P}[\min_{t\leq T} S_t \leq B] 
+		&= \mathbb{P}[\min_{t\leq T} (r - \frac{\sigma^2}{2}) t  + \sigma W_t \leq 
+		\log \frac{B}{S_0}] \\
+		&= \mathbb{P}[\min_{t\leq T} (r - \frac{\sigma^2}{2}) t  + \sigma \sqrt{t} 
+		N(0,1) \leq \log \frac{B}{S_0}]
+	\end{split}
+\end{equation}
+
+Now, using Girsonov's Theorem, we can get an analytic expression for the 
+distribution above:
+\begin{equation}
+	\mathbb{P}[\tau_B \leq T] = 1 - \left( \Phi(d^+) - \left( \frac{S_0}{B}
+	\right)^p \Phi(d^-) \right)
+\end{equation}
+where :
+\begin{equation*}
+	d^+ = \frac{ \log \frac{S_0}{B} + (r - \frac{\sigma^2}{2}) t }{\sigma \sqrt{T}}
+\end{equation*}
+\begin{equation*}
+	d^- = \frac{ - \log \frac{S_0}{B} + (r - \frac{\sigma^2}{2}) t }{\sigma \sqrt{T}}
+\end{equation*}
+\begin{equation*}
+	p =  1 - \frac{2r}{\sigma^2}
+\end{equation*}
+and $\Phi$ is the cumulative distribution function for a standard normal.
