@@ -1,106 +1,93 @@
 import numpy as np
 from scipy.stats import rv_discrete
 
+# Beta functions below return 1/lambda value for use in exponential dist
 
-"""
-Takes the next jump in the mutation process
-where jump time is sampled from exponential distribution
-and we progress to next t only if the next t is less than
-maturity period and next step is calculated accordingly.
-"""
-def mutation_step(X,T,params):
-    tn = X[0]
-    Lt = X[1]
-    N = params['numFirms']
-    if(tn==T):
-        return (tn,Lt)
-    delta_t = Lambda_t(params,Lt)
-    newtn = tn + delta_t
-    newLt = Lt + 1.0
-    if(newtn<=T):
-        return (newtn,newLt)
-    else:
-        return (T,Lt)
 
-"""
-Performs mutation steps for M portfolios
-"""
-
-def mutation(X_t,X_chi,params):
-    T = params['T']
-    M = X_t.shape[0]
-    N = params['numFirms']
-    for i in range(M):
-        X_t[i],X_chi[i] = mutation_step((X_t[i],X_chi[i]),T,params)
-    return X_t,X_chi
-
-"""
-Sample function for the jump time
-"""
-
-def Lambda_t(params,Lt):
+def beta_t_1(Lt, params):
     a = params['a']
     b = params['b']
     N = params['numFirms']
-    scale_param = 1.0/(a*np.exp((b*Lt)/float(N)))
-    return np.random.exponential(scale=scale_param)
+    beta_t = 1 / (a * np.exp(b * Lt / N))
+    return beta_t
 
-"""
-Selection process similar to Merton's model
-"""
 
-def selection(X_t,X_chi,params):
+def beta_t_2(Lt, params):
+    a = params['a']
+    b = params['b']
+    N = params['numFirms']
+    beta_t = 1 / (1 - Lt / N)
+    return beta_t
+
+# Performs mutation steps for M portfolios
+
+
+def mutation(Xp, params, betafn=beta_t_2):
+    T = params['T']
+    M = Xp.shape[0]
+    N = params['numFirms']
+    X_t = Xp[:, 0]
+    X_xi = Xp[:, 1]
+    beta_t = betafn(X_xi, params)
+    delta_t = beta_t * np.random.exponential(size=M)
+    X_t += delta_t
+    X_xi[X_t <= T] += 1
+    X_t[X_t > T] = T
+    return Xp
+
+# Selection process similar to Merton's model
+
+
+def selection(Xp, params):
     alpha = params['alpha']
     T = params['T']
-    M = X_t.shape[0]
-    G = potential(X_t,alpha,T)
+    M = Xp.shape[0]
+    X_t = Xp[:, 0]
+    G = potential(X_t, alpha, T)
     norm_const = G.sum() / M
     probabilities = G / G.sum()
     sampled_indices = rv_discrete(
         values=(np.arange(M), probabilities)).rvs(size=M)
-    X_t = X_t[sampled_indices]
-    X_chi = X_chi[sampled_indices]
-    return X_t,X_chi,norm_const
-"""
-Potential function for the Interacting particle system:
-if t<T then it's e^alpha else it's 1.0
-"""
+    Xnew = Xp[sampled_indices, :]
+    return Xnew, norm_const
 
-def potential(X_t,alpha,T):
+# Potential function for the Interacting particle system:
+# if t<T then it's e^alpha else it's 1.0
+
+
+def potential(X_t, alpha, T):
     M = X_t.shape[0]
     probabilities = np.ones(M)
-    for i in range(M):
-        if(X_t[i]<T):
-            probabilities[i] = np.exp(alpha)
+    probabilities[X_t < T] = np.exp(alpha)
     return probabilities
 
-"""
-Estimating probabilities counting the expectation of defaults
-at 125th iteration.Here the counts are scaled with potential
-and then normalized with expectation of normalization constants.
-"""
-def estimator(X_chi,norm_consts,params):
-    M = X_chi.shape[0]
-    N = params['numFirms']
-    p = np.zeros(N+1)
-    for i in range(M):
-        p[int(X_chi[i])] = p[int(X_chi[i])] + np.exp(-1.0*params['alpha']*int(X_chi[i]))
-    defcounts = p
-    normalization = norm_consts[1:].prod()
-    default_prob = (p/float(M))*normalization
-    return default_prob, defcounts
-"""
-Estimating probabilities counting the expectation of defaults
-at 125th iteration.Unscaled with potential and no norm consts
-because of absence of potentials.
-"""
+# Estimating probabilities counting the expectation of defaults
+# at 125th iteration.Here the counts are scaled with potential
+# and then normalized with expectation of normalization constants.
 
-def MCestimator(X_chi,norm_consts,params):
-    M = X_chi.shape[0]
+
+def estimator(Xp, norm_consts, params):
+    M = Xp.shape[0]
     N = params['numFirms']
-    p = np.zeros(N+1)
-    for i in range(M):
-        p[int(X_chi[i])] = p[int(X_chi[i])] + int(X_chi[i])
-    defcounts = p
-    default_prob = p/float(M)
+    p = np.zeros(N + 1)
+    defcounts = np.zeros(N + 1)
+    X_xi = Xp[:, 1]
+    np.add.at(p, X_xi.astype(np.int), np.exp(-params['alpha'] * X_xi))
+    np.add.at(defcounts, X_xi.astype(np.int), 1)
+    normalization = norm_consts[1:].prod()
+    default_prob = p / M * normalization
+    return default_prob, defcounts
+
+# Estimating probabilities counting the expectation of defaults
+# at 125th iteration.Unscaled with potential and no norm consts
+# because of absence of potentials.
+
+
+def MCestimator(Xp, norm_consts, params):
+    M = Xp.shape[0]
+    N = params['numFirms']
+    defcounts = np.zeros(N + 1)
+    X_xi = Xp[:, 1]
+    np.add.at(defcounts, X_xi.astype(np.int), 1)
+    default_prob = defcounts / defcounts.sum()
     return default_prob, defcounts
