@@ -1,0 +1,70 @@
+We let $\Delta t = \frac{T}{n}$ and divide the Time interval $[0,T]$ in to equal 
+intervals. We denote the chain $X_p = \tilde{X}_{\frac{pT}{n}}$, where $\tilde{X}$ 
+evolves according to the continuous time dynamics,and denote the whole history of 
+the chain as $Y_{p} =(X_{0},X_{1},...,X_{p})$. We use the potential function 
+defined in the equation (\ref{eq:merton_potential}). And we select a smaller 
+time step to calculate the Euler Step, and for our experiment we have chosen 
+$\delta t = 10^{-3}$.
+
+Also due to the form of the potential function, we do not have to track the 
+entire history of the particle, only its current value $X_p$ and that of its 
+"parent" $X_{p-1}$, which is denoted as $\hat{W}_p$ in the following description.
+
+\subsubsection{Initialization}
+We take $M$ particles, where each particle represents a complete portfolio, 
+with identical initial values. So $\forall j \in \{,1,..,M\},$
+And we define the initial parent $\hat{W}_0^{j}=\hat{X}_0^{j}$.
+\begin{equation*}
+			\begin{split}
+				\hat{X}_0^{(j)} &= \left( t_{0}^{(j)},L_{t_0}^{(j)} \right),  \quad 
+				 1 \leq j\leq M                                                                    \\
+			\end{split}
+\end{equation*}
+$ t_{0}^{(j)} = 0$ and $ L_{t_{0}}^{(j)} = 0$ $\forall 1 \leq j\leq M $ considering L as a pure birth process.
+
+
+\subsubsection{Selection Stage}
+Sample independent $M$ particles with repetition from input $M$ paths according to empirical distribution under the given Gibbs measure.
+$\left(t^{(j)}_{n-1}, L_{t_{n-1}}^{(j)} \right)$ becomes $\left( \hat{t}_{n-1}^{(j)}, \hat{L}_{t_{n-1}}^{(j)}\right)$.
+		\begin{equation*}
+			\begin{split}
+				\eta_{p}^{M}(dX) &= \frac{1}{M \hat{\eta}_{p}^{M}}\sum_{j=1}^{M}\left(\omega^{\alpha}(X_{p}^{(j)})\right) \times \delta_{{X}_p^{(j)}}(dX) \\
+				&\text{Where} \quad
+				\hat{\eta}_{p}^{M} = \mathbb{E}_{p}^{m}\omega^{\alpha}(X) =
+				\frac{1}{M}\sum_{j=1}^{M}\left(\omega^{\alpha}(X_{p}^{(j)})\right)\\
+				&\omega^{\alpha}(X)= 
+                		\begin{cases}
+    						\exp(\alpha),& \text{if } t < T\\
+    						1,              & \text{otherwise}
+						 \end{cases}
+		    \end{split}
+		\end{equation*}
+
+Then we choose $M$ independent samples using the following distribution:
+
+\begin{equation}
+	\eta_{p}^{M} (dW,dX) = \frac{1}{M \hat{\eta}_{p}^{M}} \sum_{j=1}^{M} 
+	\exp \left[ \alpha \left( V(\hat{X}_{p}^{(j)}) \right) - V(\hat{W}^{(j)}_{p}) 
+	\right] \times \delta_{(\hat{W}_p^{j},\hat{X}_p^{j})} (dW,dX)
+\end{equation}
+
+The particles selected are then denoted as $(\breve{W}_p^{j},\breve{X}_p^{j})$.
+
+\subsubsection{Mutation Stage}
+Evolve paths from $\left( \hat{t}_{n-1}^{(j)}, \hat{L}_{t_{n-1}}^{(j)}\right)$ to $\left(t^{(j)}_{n}, L_{t_{n}}^{(j)} \right)$.
+The function $\lambda$ is used to take each step until $t$ evolves to maturity time $T$. 
+		\begin{equation*}
+				\begin{split}
+					&t^{(j)}_{n}= \min\left(\hat{t}^{(j)}_{n-1} + \lambda\left(\hat{t}^{(j)}_{n-1},\hat{L}_{t_{n-1}}^{(j)}\right),T\right) \\
+					& \lambda\left(\hat{X}\right) \sim \frac{1}{1-\frac{L_{t}}{N}} \times \exp(-x) \\
+					&L_{t_{n}}^{(j)} = \hat{L}_{t_{n-1}}^{(j)} + 1 \text{ if } t^{(j)}_{n} 		\neq T					
+				\end{split}	
+		\end{equation*}
+
+\subsubsection{Termination Stage}
+Teminate after running $n$ loops of mutation and selection. Here, $n =$ maximum number of defaults that can happen.
+ Estimate default probability $p_k(T) = \mathbb{P}\left( L\left( T \right) = k
+		      \right)$ using formula below.
+\begin{equation*}
+	\tilde{p}^m_{\ell}(T,\alpha) = \mathbb{E}^{m}_{n}{\delta_{\ell}(\mathcal{L}(X))exp(-\alpha \mathcal{L}(X))}\prod_{i=0}^{n-1}\mathbb{E}_{i}^{m}\omega^{\alpha}(X)
+\end{equation*}
