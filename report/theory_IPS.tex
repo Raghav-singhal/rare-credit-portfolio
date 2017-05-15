@@ -35,7 +35,7 @@ starting from $\eta_1 = M_1(x_0,.)$. This dynamical equation on the space of mea
 
 
 \subsubsection{IPS Interpretation and Monte Carlo Algorithm}
-We introduce a natural interacting path-particle system. For a given integer M, using the transformation $\varPhi_n$, we construct a Markov chain $\{\xi_n\}_{n\geq 0}$ whose state $\xi_n = (\xi_n^j)_{1\leq j \leq M}$ at time n can be interpreted as a set of M Monte Carlo samples of path-particles 
+We introduce a natural interacting path-particle system. For a given integer M, using the transformation $\varPhi_n$, we construct a Markov chain $\{\xi_n\}_{n\geq 0}$ whose state $\xi_n = (\xi_n^j)_{1\leq j \leq M}$ at time n can be interpreted as a set of $M$ Monte Carlo samples of path-particles 
 $$\xi_n^j = (\xi_{0,n}^j, \xi_{1,n}^j,..., \xi_{n,n}^j) \in F_n = (E_0 \cross ... \cross E_n)$$
 The transition mechanism of this Markov chain can be described as follows. We start with an initial configuration $\xi_1 = (\xi_1^j)_{1\leq j \leq M}$ that consists of M independent and identically distributed random variables with distribution,
 
@@ -58,7 +58,7 @@ according to the Boltzmann-Gibbs measure
 \begin{equation}
 \sum_{j=1}^{M} \frac{G_{n-1}(\xi_{0,n-1}^j,...,\xi_{n-1,n-1}^j)}{\sum_{k=1}^{M}G_{n-1}(\xi_{0,n-1}^k,...,\xi_{n-1,n-1}^k)} \delta_{(\xi_{0,n-1}^j,...,\xi_{n-1,n-1}^j)}
 \end{equation}
-and for the mutation stage, each selected part-particle $\hat{xi}_{n-1}^j$ is extended as follows.
+and for the mutation stage, each selected part-particle $\hat{\xi}_{n-1}^j$ is extended as follows.
 \begin{eqnarray*}
 \xi_n^j & = & (\hat{\xi}_{n-1}^j, \xi_{n,n}^j)\\
 & = & ((\hat{\xi}_{0,n-1}^j,..., \hat{\xi}_{n-1,n-1}^j), \xi_{n,n}^j) \in F_n = F_{n-1} \cross E_n
