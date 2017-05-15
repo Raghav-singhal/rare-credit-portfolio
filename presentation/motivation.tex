@@ -1,37 +1,46 @@
-\begin{frame}
+\begin{frame}{Intuition}
 	\begin{itemize}
 		\item Given a Markov chain $S=(S_n)_{0 \leq n \leq T}$. At each n, we have 
 		      $d$ correlated assets, $S_n = (S_n^1,...,S_n^d) \in \mathit{E}$. 
 		\item We wish to understand the nature of probabilities of rare events 
 		      which are of the form $L(T) > K$ which can be expressed as below.
 	\end{itemize}
-	$$
-	\{L(T) \geq K\} = \{V_T(S_T)\geq K\} = \{V_T(S_0,...,S_T)\geq K\}
-	$$
-	$V(T)$ can be thought of as a real positive function that is a risk measure of these rare events.\\
+	\begin{block}{Rare Event Probability}
+		$$\{L(T) \geq K\} = \{V_T(S_T)\geq K\} = \{V_T(S_0,...,S_T)\geq K\}$$\\
+		$V(T)$ can be thought of as a real positive function that is a risk measure of these rare events.
+	\end{block}
 \end{frame}
 
 \begin{frame}
 	\begin{itemize}
-		\item Now using the Cramer theory framework we express the probanility
+		\item Now using the Cramer theory framework we express the probability
 		      as follows:
 	\end{itemize}
-	$$\mathbb{P}(V_T(S_T) \geq K) = \mathbb{E}\left( \mathbf{1}_{\{V_T(S_T) \geq K\}}e^{\lambda V_T(S_T)}e^{-\lambda V_T(S_T)} \right)$$
-	which can be rewritten as
-	$$\mathbb{E}^{(\lambda)} \left(  \mathbf{1}_{\{V_T(S_T) \geq K\}} e^{-\lambda V_T(S_T)} \right) \mathbb{E} \left(e^{\lambda V_T(S_T)}\right) = 
-	\mathbb{E}^{(\lambda)}(f_T(S_T)) \mathbb{E}(e^{\lambda V_T(S_T)})  $$
-	where $f_t(S_T) := \mathbf{1}_{\{V_T(S_T) \geq K\}}e^{-\lambda V_T(S_T)}
-	$
-	and
-	$$d\mathbb{P}^{(\lambda)} \propto e^{\lambda V_T(S_T)}d\mathbb{P}$$
+	\begin{block}{Risk Probability}
+		\begin{equation*}
+			\mathbb{P}(V_T(S_T) \geq K) = \mathbb{E}\left( \mathbf{1}_{\{V_T(S_T) \geq K\}}e^{\lambda V_T(S_T)}e^{-\lambda V_T(S_T)} \right)
+		\end{equation*}
+		which can be rewritten as
+		\begin{equation*}
+			\mathbb{E}^{(\lambda)} \left(  \mathbf{1}_{\{V_T(S_T) \geq K\}} e^{-\lambda V_T(S_T)} \right) \mathbb{E} \left(e^{\lambda V_T(S_T)}\right) = 
+			\mathbb{E}^{(\lambda)}(f_T(S_T)) \mathbb{E}(e^{\lambda V_T(S_T)})
+		\end{equation*}
+		where 
+		\begin{equation*}
+			\begin{split}
+				f_t(S_T) &:= \mathbf{1}_{\{V_T(S_T) \geq K\}}e^{-\lambda V_T(S_T)} \\
+				d\mathbb{P}^{(\lambda)} &\propto e^{\lambda V_T(S_T)}d\mathbb{P}
+			\end{split}
+		\end{equation*}
+	\end{block}
 \end{frame}
 		
 \begin{frame}
 	With the convention that $V_0 = 0$, we get the following decomposition
 	$$e^{\lambda V_T(S_T)} \equiv \prod_{p=1}^{T} e^{\lambda (V_p(S_p) - V_{p-1}(S_{p-1}))}$$
-										
+																				
 	By using the notation $$\mathcal{X}_k = (S_k, S_{k+1})$$ for $0 \leq k < T$, the above produce can be rewritten as
-										
+																				
 	$$\prod_{p=1}^{T} G_{p-1}(\mathcal{X}_{p-1})$$ where
 	$$G_{p-1}(\mathcal{X}_{p-1}) := e^{\lambda (V_p(S_p) - V_{p-1}(S_{p-1}))}$$
 \end{frame}
