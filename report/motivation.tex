@@ -5,8 +5,8 @@ $$
 $V(T)$ can be thought of as a real positive function that is a risk measure of these rare events.\\
 Calculating $\mathbb{P}(V_T(S_T) \geq K)$ through the standard Monte Carlo procedure are not feasible because of the difficulty faced in ensuring that we generate a large number of samples to realize the rare event. One partial remedy is to provide a tight upper bound based on large deviation ideas. For any $\lambda \geq 0$ we have :
 \begin{equation}
-\mathbb{P}(V_T(S_T)\geq K) = \mathbb{E}\left( \mathbf{1}_{\{V_T(S_T)\geq K\}} e^{\lambda V_T(S_T)} e^{-\lambda V_T(S_T)} \right) \leq
-e^{-\lambda K}\mathbb{E}\left( \mathbf{1}_{\{V_T(S_T)\geq K\}}e^{\lambda V_T(S_T)} \right)
+	\mathbb{P}(V_T(S_T)\geq K) = \mathbb{E}\left( \mathbf{1}_{\{V_T(S_T)\geq K\}} e^{\lambda V_T(S_T)} e^{-\lambda V_T(S_T)} \right) \leq
+	e^{-\lambda K}\mathbb{E}\left( \mathbf{1}_{\{V_T(S_T)\geq K\}}e^{\lambda V_T(S_T)} \right)
 \end{equation}
 If we denote $\mathbb{E^{\lambda}}$ the expectation under the probablity $\mathbb{P}^{(\lambda)}$ defined by
 $$d\mathbb{P}^{(\lambda)} \propto e^{\lambda V_T(S_T)}d\mathbb{P}$$
@@ -16,12 +16,12 @@ and we know that
 $$\mathbb{E}^{(\lambda)}\left(\mathbf{1}_{\{V_T(S_T)\geq K\}}\right)\leq 1 $$
 from which we get
 \begin{equation}
-\mathbb{P}\left(V_T(S_T) \geq K\right) \leq e^{-\sup_{\lambda\geq 0}(\lambda K - \Lambda(\lambda))}
+	\mathbb{P}\left(V_T(S_T) \geq K\right) \leq e^{-\sup_{\lambda\geq 0}(\lambda K - \Lambda(\lambda))}
 \end{equation}
 where $\Lambda(\lambda)$ is the Fenchel Transformation which is $\log (\mathbb{E}(\lambda V_T(S_T)))$.\\
 Examining the above, we observe that the desired probability can be approximated by searching for a proper $\lambda$. This large deviation type approach is widely used, but in the above form, it requires extensive calculations in order to obtain a reasonable approximation of the desired probability.\\
 
-Del Moral and Garnier provide in $TODO$ a zero bias estimate with interacting particle systems. The approach is to construct a genealofical tree based model instead of the above large deviation type inequality.
+Del Moral and Garnier provide in \cite{delmoral2005} a zero bias estimate with interacting particle systems. The approach is to construct a genealofical tree based model instead of the above large deviation type inequality.
 Using the same change of measure from $\mathbb{P}$ to $\mathbb{P}^{(\lambda)}$ we can say that the target probability
 $$\mathbb{P}(V_T(S_T) \geq K) = \mathbb{E}\left( \mathbf{1}_{\{V_T(S_T) \geq K\}}e^{\lambda V_T(S_T)}e^{-\lambda V_T(S_T)} \right)$$
 can be rewritten as
@@ -37,7 +37,7 @@ $$G_{p-1}(\mathcal{X}_{p-1}) := e^{\lambda (V_p(S_p) - V_{p-1}(S_{p-1}))}$$
 
 Using the notation that $F_T(\mathcal{X}_T) = f_T(S_T)$ we get
 \begin{equation}
-\mathbb{E}^{(\lambda)}(f_T(S_T)) = \frac{\mathbb{E}(F_T(\mathcal{X}_T)\prod_{p=1}^{T}G_p(\mathcal{X}_p))}{\mathbb{E}(\prod_{p=1}^{T}G_p(\mathcal{X}_p))} := \eta_T(F_T)
+	\mathbb{E}^{(\lambda)}(f_T(S_T)) = \frac{\mathbb{E}(F_T(\mathcal{X}_T)\prod_{p=1}^{T}G_p(\mathcal{X}_p))}{\mathbb{E}(\prod_{p=1}^{T}G_p(\mathcal{X}_p))} := \eta_T(F_T)
 \end{equation}
 
 These quanitites above can be approximated efficiently by interacting particle systems.
