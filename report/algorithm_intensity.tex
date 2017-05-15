@@ -22,19 +22,20 @@ $ t_{0}^{(j)} = 0$ and $ L_{t_{0}}^{(j)} = 0$ $\forall 1 \leq j\leq M $ consider
 
 \subsubsection{Selection Stage}
 Sample independent $M$ particles with repetition from input $M$ paths according to empirical distribution under the given Gibbs measure.
-$\left(t^{(j)}_{n-1}, L_{t_{n-1}}^{(j)} \right)$ becomes $\left( \hat{t}_{n-1}^{(j)}, \hat{L}_{t_{n-1}}^{(j)}\right)$.
+$\left(t^{(j)}_{i-1}, L_{t_{i-1}}^{(j)} \right)$ becomes $\left( \hat{t}_{i-1}^{(j)}, \hat{L}_{t_{i-1}}^{(j)}\right)$.
 
 \begin{eqnarray*}
-\eta_{p}^{M}(dX) & = & \frac{1}{M \hat{\eta}_{p}^{M}}\sum_{j=1}^{M}\left(\omega^{\alpha}(X_{p}^{(j)})\right) \times \delta_{{X}_p^{(j)}}(dX) \\
+\eta_{i}^{M}(dX) & = & \frac{1}{M \hat{\eta}_{i}^{M}}\sum_{j=1}^{M}\left(\omega^{\alpha}(X_{i}^{(j)})\right) \times \delta_{{X}_i^{(j)}}(dX) \\
 \text{Where} \quad
-\hat{\eta}_{p}^{M} & = & \mathbb{E}_{p}^{m}\omega^{\alpha}(X) =
-\frac{1}{M}\sum_{j=1}^{M}\left(\omega^{\alpha}(X_{p}^{(j)})\right)\\
+\hat{\eta}_{i}^{M} & = & \mathbb{E}_{i}^{m}\omega^{\alpha}(X) =
+\frac{1}{M}\sum_{j=1}^{M}\left(\omega^{\alpha}(X_{i}^{(j)})\right)\\
 \omega^{\alpha}(X) & = &  
 \begin{cases}
 \exp(\alpha), \text{if } t < T\\
 1,               \text{otherwise}
 \end{cases}
 \end{eqnarray*}
+
 
 Then we choose $M$ independent samples using the following distribution:
 
@@ -47,13 +48,13 @@ Then we choose $M$ independent samples using the following distribution:
 The particles selected, are then denoted as $(\breve{W}_p^{j},\breve{X}_p^{j})$.
 
 \subsubsection{Mutation Stage}
-Evolve paths from $\left( \hat{t}_{n-1}^{(j)}, \hat{L}_{t_{n-1}}^{(j)}\right)$ to $\left(t^{(j)}_{n}, L_{t_{n}}^{(j)} \right)$.
+Evolve paths from $\left( \hat{t}_{i-1}^{(j)}, \hat{L}_{t_{i-1}}^{(j)}\right)$ to $\left(t^{(j)}_{i}, L_{t_{i}}^{(j)} \right)$.
 The function $\lambda$ is used to take each step until $t$ evolves to maturity time $T$. 
-		\begin{equation*}
+			\begin{equation*}
 				\begin{split}
-					&t^{(j)}_{n}= \min\left(\hat{t}^{(j)}_{n-1} + \lambda\left(\hat{t}^{(j)}_{n-1},\hat{L}_{t_{n-1}}^{(j)}\right),T\right) \\
-					& \lambda\left(\hat{X}\right) \sim \frac{1}{1-\frac{L_{t}}{N}} \times \exp(-x) \\
-					&L_{t_{n}}^{(j)} = \hat{L}_{t_{n-1}}^{(j)} + 1 \text{ if } t^{(j)}_{n} 		\neq T					
+					&t^{(j)}_{i}= \min\left(\hat{t}^{(j)}_{i-1} + \lambda\left(\hat{t}^{(j)}_{i-1},\hat{L}_{t_{i-1}}^{(j)}\right),T\right) \\
+					& \lambda\left(\hat{X}\right) \sim \frac{1}{1-\frac{L_{t}}{n}} \times \exp(-x) \\
+					&L_{t_{i}}^{(j)} = \hat{L}_{t_{i-1}}^{(j)} + 1 \text{ if } t^{(j)}_{n} 		\neq T					
 				\end{split}	
 		\end{equation*}
 
