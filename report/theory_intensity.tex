@@ -1,0 +1,23 @@
+Local Intensity model belongs to family of Markovian intensity models of credit risk.  Assume there are $n$ names in the credit risk portfolio. The calculation of cumulative loss $L = {L_{t};t \geq 0}$ in the credit portfolio is modeled as a Markov point process. This markov point process is characterized by the local intensity function $\lambda(t,L_{t})$ given by a deterministic function ${\lambda(t,i)}_{t \geq 0,i \geq 0}$ satisfying $\lambda(t,i) = 0$ for $ i \geq n$. We need to satisfy the last condition to ensure that process $L$ is stopped when $n^{th}$ level as $n$ that is the maximum number of defaults that can occur because there are $n$ names in the portfolio. $L_{0} = 0$ is assumed where $L$ is considered as a pure birth process. Thus, the probability of a jump in the infinitesimal time interval $(t,t+dt)$ is given by $\lambda(t,L_{t})dt$. \\
+The infinitesimal generator $\mathcal{G}_{t}$ of the process is given by the $(n+1) \times (n+1)$ matrices: \\
+\[\mathcal{G}_{t} = 
+	\begin{bmatrix}
+-\lambda(t,0)& \lambda(t,0) & 0 & 0 & 0 \\
+0 & -\lambda(t,1)& \lambda(t,1)  & 0 & 0 \\
+ & &\dots & & \\
+ 0 & 0 & 0 & -\lambda(t,n-1)& \lambda(t,n-1) \\
+ 0 & 0 & 0 & 0 & 0
+\end{bmatrix}
+\]
+Now lets consider $p_{i}(t) = \mathbb{P}{L_{t}=i}$ and $p(t) = [p_{i}(t)]_{i=0 \dots n}$ and it satisfies Kolmogorov equation:
+\begin{equation}
+\left(\partial_{t} - \mathcal(G)_{t}^{*}\right)p = 0 \text{ on } (0,+\infty), p(0) = \delta_{0},
+\end{equation} 
+which is infact a system of ordinary differential equations where $\mathcal{G}_{t}^{*}$ denotes the transpose of the $\mathcal{G}$ matrix as it is a real matrix. Now Kolmogorov equation can be expressed in terms of possibly infinitely man matrix multiplications. And hence the solution to the Kolmogorov equation is given by a matrix exponential  of the form \\
+\begin{equation}
+p(t) = exp(t\mathcal{G}^{*})\delta_{0}, \quad t \geq 0
+\end{equation}
+The sample paths of the loss process $L$ are piecewise constant. Let $\tilde{t_{i}}$ denote the $i$th ordered jump time of L, for each $i = 1, \dots , n,$ (or $\tilde{t_{i}}  = + \infty$, in case there are less than $i$ jumps on a given trajectory). We also set $\tilde{t_{0}} = 0 $. Given a fixed maturity $T$, say $ T = 5yr$, we define $t_{i} = min(\tilde{t_{i}},T)$ for each $i = 0, \dots, n$. Consequently, $t_{i} < T$ and $L_{t_{i}} = i$ if and only if there are at least i jumpos of $L$ before the maturity $T$ on a given trajectory. The background Markov chain ${X_{i}}_{0 \leq i \leq n}$ and used in this section is then defined by: \\
+\begin{equation}
+X_{i} = (t_{i}, L_{t_{i}}), 0 \leq i \leq n.
+\end{equation}

@@ -1,0 +1,7 @@
+For this particular setup, the 3 experiments were performed. The maturity was set to 5 years for each experiment. In each of the 3 experiments, 3 different values of m were chosen: $5000$, $20000$ and $10^{5}$. Number of names in the portfolio ($n$) is $125$. The values of $\alpha$ was taken from $0.4$ to $4.0$ with step size of $0.4$ and also experiments with normal monte carlo were considered along. The $\alpha$ that gave the best results was chosen by the given formula:
+\begin{equation}
+\alpha(\ell) = argmax_{\alpha} \# \{ j; 0 \leq j \leq m, L_{T}(\omega_{\alpha}^{j},\alpha) = \ell \}
+\end{equation}  
+In figure (a) of \ref{fig:LIM_1m}, \ref{fig:LIM_20k} and \ref{fig:LIM_5k}, the relationship between $\alpha$ values and the number of defaults is shown. It can be observed that there is no large difference in the number of defaults with the increase in $\alpha$. Infact, with the change of $\alpha$, there is no significant change in the number of defaults obtained unlike other method. 
+
+In figure (b) of \ref{fig:LIM_1m}, \ref{fig:LIM_20k} and \ref{fig:LIM_5k}, the relationship between number of defaults and the log probabilities are shown. Also, changing the values of m drastically, doesn't change the log probabilties which explains the efficiency of the algorithm. However, it can be also observed that for different number of samples, the probabilities obtained for the higher number of defaults are significantly low. The number of defaults improve from normal monte carlo case when the value of $\alpha=0$. 
