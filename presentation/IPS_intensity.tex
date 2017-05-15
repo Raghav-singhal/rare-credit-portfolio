@@ -53,7 +53,7 @@
 		\begin{equation*}
 				\begin{split}
 					&t^{(j)}_{n}= \min\left(\hat{t}^{(j)}_{n-1} + \lambda\left(\hat{t}^{(j)}_{n-1},\hat{L}_{t_{n-1}}^{(j)}\right),T\right) \\
-					& \lambda\left(\hat{X}\right) \sim \exp(-Kt) \text{ where }K = a\exp\left(\frac{bL_{t}}{N}\right) \\
+					& \lambda\left(\hat{X}\right) \sim \frac{1}{1-\frac{L_{t}}{N}} \times \exp(-x) \\
 					&L_{t_{n}}^{(j)} = \hat{L}_{t_{n-1}}^{(j)} + 1 \text{ if } t^{(j)}_{n} 		\neq T					
 				\end{split}	
 		\end{equation*}
