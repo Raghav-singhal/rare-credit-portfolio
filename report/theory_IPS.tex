@@ -21,7 +21,7 @@ $$\gamma_{n+1}(1) = \gamma_n(G_n) = \eta_n(G_n)\gamma_n(1) = \prod_{p=1}^{n}\eta
 Hence given any bounded measurable function $f_n$ on $F_n$ we have
 $$\gamma_n(f_n) = \eta_n(f_n) \prod_{1\leq p<n}\eta_p(G_p)$$
 
-Using the notation $G_p^- = 1/G_p$ and the above definitons of $\gamma_n$ and $\eta_n$ we see that
+Using the notation $G_p^- = 1/G_p$ and the above definitions of $\gamma_n$ and $\eta_n$ we see that
 
 \begin{eqnarray}
 \mathbb{E}[f_n(Y_n)] & = & \mathbb{E}\left[\ f_n(Y_n) \prod_{1\leq p < n} G_p^-(Y_p) \cross \prod_{1\leq p < n} G_p(Y_p) \right]\\
@@ -35,7 +35,7 @@ starting from $\eta_1 = M_1(x_0,.)$. This dynamical equation on the space of mea
 
 
 \subsubsection{IPS Interpretation and Monte Carlo Algorithm}
-We introduce a natural interacting path-particle system. For a given integer M, using the transformatios $\varPhi_n$, we construct a Markov chain $\{\xi_n\}_{n\geq 0}$ whose state $\xi_n = (\xi_n^j)_{1\leq j \leq M}$ at time n can be interpreted as a set of M Monte Carlo samples of path-particles 
+We introduce a natural interacting path-particle system. For a given integer M, using the transformation $\varPhi_n$, we construct a Markov chain $\{\xi_n\}_{n\geq 0}$ whose state $\xi_n = (\xi_n^j)_{1\leq j \leq M}$ at time n can be interpreted as a set of M Monte Carlo samples of path-particles 
 $$\xi_n^j = (\xi_{0,n}^j, \xi_{1,n}^j,..., \xi_{n,n}^j) \in F_n = (E_0 \cross ... \cross E_n)$$
 The transition mechanism of this Markov chain can be described as follows. We start with an initial configuration $\xi_1 = (\xi_1^j)_{1\leq j \leq M}$ that consists of M independent and identically distributed random variables with distribution,
 

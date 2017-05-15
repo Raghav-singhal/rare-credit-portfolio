@@ -1,4 +1,4 @@
-We assume that we have a Markov chain $S=(S_n)_{0 \leq n \leq T}$. At each time step n, we have d correlated assets or sources. $S_n = (S_n^1,...,S_n^d) \in \mathit{E}$. We wish to understand the nature of probabilites of rare events which are of the form $L(T) > K$. $L(T)$ is a measure of the rare events which more generally can be expressed as below.
+We assume that we have a Markov chain $S=(S_n)_{0 \leq n \leq T}$. At each time step n, we have d correlated assets or sources. $S_n = (S_n^1,...,S_n^d) \in \mathit{E}$. We wish to understand the nature of probabilities of rare events which are of the form $L(T) > K$. $L(T)$ is a measure of the rare events which more generally can be expressed as below.
 $$
 \{L(T) \geq K\} = \{V_T(S_T)\geq K\} = \{V_T(S_0,...,S_T)\geq K\}
 $$
@@ -8,7 +8,7 @@ Calculating $\mathbb{P}(V_T(S_T) \geq K)$ through the standard Monte Carlo proce
 	\mathbb{P}(V_T(S_T)\geq K) = \mathbb{E}\left( \mathbf{1}_{\{V_T(S_T)\geq K\}} e^{\lambda V_T(S_T)} e^{-\lambda V_T(S_T)} \right) \leq
 	e^{-\lambda K}\mathbb{E}\left( \mathbf{1}_{\{V_T(S_T)\geq K\}}e^{\lambda V_T(S_T)} \right)
 \end{equation}
-If we denote $\mathbb{E^{\lambda}}$ the expectation under the probablity $\mathbb{P}^{(\lambda)}$ defined by
+If we denote $\mathbb{E^{\lambda}}$ the expectation under the probability $\mathbb{P}^{(\lambda)}$ defined by
 $$d\mathbb{P}^{(\lambda)} \propto e^{\lambda V_T(S_T)}d\mathbb{P}$$
 we get 
 $$\mathbb{E}\left( \mathbf{1}_{\{V_T(S_T)\geq K\}}e^{\lambda V_T(S_T)}  \right) = \mathbb{E}^{(\lambda)}\left(\mathbf{1}_{\{V_T(S_T)\geq K\}}\right)\mathbb{E}\left(e^{\lambda V_T(S_T)}\right)$$
@@ -21,7 +21,7 @@ from which we get
 where $\Lambda(\lambda)$ is the Fenchel Transformation which is $\log (\mathbb{E}(\lambda V_T(S_T)))$.\\
 Examining the above, we observe that the desired probability can be approximated by searching for a proper $\lambda$. This large deviation type approach is widely used, but in the above form, it requires extensive calculations in order to obtain a reasonable approximation of the desired probability.\\
 
-Del Moral and Garnier provide in \cite{delmoral2005} a zero bias estimate with interacting particle systems. The approach is to construct a genealofical tree based model instead of the above large deviation type inequality.
+Del Moral and Garnier provide in \cite{delmoral2005} a zero bias estimate with interacting particle systems. The approach is to construct a genealogical tree based model instead of the above large deviation type inequality.
 Using the same change of measure from $\mathbb{P}$ to $\mathbb{P}^{(\lambda)}$ we can say that the target probability
 $$\mathbb{P}(V_T(S_T) \geq K) = \mathbb{E}\left( \mathbf{1}_{\{V_T(S_T) \geq K\}}e^{\lambda V_T(S_T)}e^{-\lambda V_T(S_T)} \right)$$
 can be rewritten as
@@ -40,5 +40,5 @@ Using the notation that $F_T(\mathcal{X}_T) = f_T(S_T)$ we get
 	\mathbb{E}^{(\lambda)}(f_T(S_T)) = \frac{\mathbb{E}(F_T(\mathcal{X}_T)\prod_{p=1}^{T}G_p(\mathcal{X}_p))}{\mathbb{E}(\prod_{p=1}^{T}G_p(\mathcal{X}_p))} := \eta_T(F_T)
 \end{equation}
 
-These quanitites above can be approximated efficiently by interacting particle systems.
+These quantities above can be approximated efficiently by interacting particle systems.
 
