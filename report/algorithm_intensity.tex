@@ -1,19 +1,6 @@
-We let $\Delta t = \frac{T}{n}$ and divide the Time interval $[0,T]$ in to equal 
-intervals. We denote the chain $X_p = \tilde{X}_{\frac{pT}{n}}$, where $\tilde{X}$ 
-evolves according to the continuous time dynamics,and denote the whole history of 
-the chain as $Y_{p} =(X_{0},X_{1},...,X_{p})$. We use the potential function 
-defined in the equation (\ref{eq:merton_potential}). And we select a smaller 
-time step to calculate the Euler Step, and for our experiment we have chosen 
-$\delta t = 10^{-3}$.
-
-Also due to the form of the potential function, we do not have to track the 
-entire history of the particle, only its current value $X_p$ and that of its 
-"parent" $X_{p-1}$, which is denoted as $\hat{W}_p$ in the following description.
-
+We let $n$ be the number of names in the portfolio. Let $X_{i} = \left(t_{i},L_{t_{i}}\right)$.
 \subsubsection{Initialization}
-We take $M$ particles, where each particle represents a complete portfolio, 
-with identical initial values. So $\forall j \in \{,1,..,M\},$
-And we define the initial parent $\hat{W}_0^{j}=\hat{X}_0^{j}$.
+We take $M$ particles, where each particle represents a $X$.
 \begin{equation*}
 \hat{X}_0^{(j)} = \left( t_{0}^{(j)},L_{t_0}^{(j)} \right),  \quad  1 \leq j\leq M                                                                    
 \end{equation*}
@@ -36,7 +23,6 @@ $\left(t^{(j)}_{i-1}, L_{t_{i-1}}^{(j)} \right)$ becomes $\left( \hat{t}_{i-1}^{
 \end{cases}
 \end{eqnarray*}
 
-
 Then we choose $M$ independent samples using the following distribution:
 
 \begin{equation}
@@ -50,7 +36,7 @@ The particles selected, are then denoted as $(\breve{W}_p^{j},\breve{X}_p^{j})$.
 \subsubsection{Mutation Stage}
 Evolve paths from $\left( \hat{t}_{i-1}^{(j)}, \hat{L}_{t_{i-1}}^{(j)}\right)$ to $\left(t^{(j)}_{i}, L_{t_{i}}^{(j)} \right)$.
 The function $\lambda$ is used to take each step until $t$ evolves to maturity time $T$. 
-			\begin{equation*}
+		\begin{equation*}
 				\begin{split}
 					&t^{(j)}_{i}= \min\left(\hat{t}^{(j)}_{i-1} + \lambda\left(\hat{t}^{(j)}_{i-1},\hat{L}_{t_{i-1}}^{(j)}\right),T\right) \\
 					& \lambda\left(\hat{X}\right) \sim \frac{1}{1-\frac{L_{t}}{n}} \times \exp(-x) \\
@@ -59,7 +45,7 @@ The function $\lambda$ is used to take each step until $t$ evolves to maturity t
 		\end{equation*}
 
 \subsubsection{Termination Stage}
-Terminate after running $n$ loops of mutation and selection. Here, $n =$ maximum number of defaults that can happen.
+Teminate after running $n$ loops of mutation and selection. Here, $n =$ maximum number of defaults that can happen.
  Estimate default probability $p_k(T) = \mathbb{P}\left( L\left( T \right) = k
 		      \right)$ using formula below.
 \begin{equation*}

@@ -1,6 +1,6 @@
 Local Intensity model belongs to family of Markovian intensity models of credit risk.  This model is applied using IPS framework as mentioned in \cite{carmona2009importance}.
 \subsubsection{Local Intensity Model as Markov Point Process}
- Assume there are $n$ names in the credit risk portfolio. The calculation of cumulative loss $L = {L_{t};t \geq 0}$ in the credit portfolio is modeled as a Markov point process as mentioned in \cite. This Markov point process is characterized by the local intensity function $\lambda(t,L_{t})$ given by a deterministic function ${\lambda(t,i)}_{t \geq 0,i \geq 0}$ satisfying $\lambda(t,i) = 0$ for $ i \geq n$. We need to satisfy the last condition to ensure that process $L$ is stopped when $n^{th}$ level as $n$ that is the maximum number of defaults that can occur because there are $n$ names in the portfolio. We assume that $L_{0} = 0$ and $L$ is considered as a pure birth process. Thus, the probability of a jump in the infinitesimal time interval $(t,t+dt)$ is given by $\lambda(t,L_{t})dt$. \\
+ Assume there are $n$ names in the credit risk portfolio. The calculation of cumulative loss $L = {L_{t};t \geq 0}$ in the credit portfolio is modeled as a Markov point process. This Markov point process is characterized by the local intensity function $\lambda(t,L_{t})$ given by a deterministic function ${\lambda(t,i)}_{t \geq 0,i \geq 0}$ satisfying $\lambda(t,i) = 0$ for $ i \geq n$. We need to satisfy the last condition to ensure that process $L$ is stopped when we reach $n^{th}$ level that is the maximum number of defaults that can occur because there are $n$ names in the portfolio. We assume that $L_{0} = 0$ and $L$ is considered as a pure birth process. Thus, the probability of a jump in the infinitesimal time interval $(t,t+dt)$ is given by $\lambda(t,L_{t})dt$. \\
 The infinitesimal generator $\mathcal{G}_{t}$ of the process is given by the $(n+1) \times (n+1)$ matrices: \\
 \[\mathcal{G}_{t} = 
 	\begin{bmatrix}
@@ -11,7 +11,7 @@ The infinitesimal generator $\mathcal{G}_{t}$ of the process is given by the $(n
  0 & 0 & 0 & 0 & 0
 \end{bmatrix}
 \]
-Now lets consider $p_{i}(t) = \mathbb{P}{L_{t}=i}$ and $p(t) = [p_{i}(t)]_{i=0 \dots n}$ and it satisfies Kolmogorov equation:
+Now lets consider $p_{i}(t) = \mathbb{P}({L_{t}=i})$ and $p(t) = [p_{i}(t)]_{i=0 \dots n}$ and it satisfies Kolmogorov equation:
 \begin{equation}
 \left(\partial_{t} - \mathcal(G)_{t}^{*}\right)p = 0 \text{ on } (0,+\infty), p(0) = \delta_{0},
 \end{equation} 
@@ -19,10 +19,9 @@ which is in fact a system of ordinary differential equations where $\mathcal{G}_
 \begin{equation}
 p(t) = exp(t\mathcal{G}^{*})\delta_{0}, \quad t \geq 0
 \end{equation}
- We also set $\tilde{t_{0}} = 0 $. Given a fixed maturity $T$, say $ T = 5yr$, we define $t_{i} = min(\tilde{t_{i}},T)$ for each $i = 0, \dots, n$. Consequently, $t_{i} < T$ and $L_{t_{i}} = i$ if and only if there are at least i jumps of $L$ before the maturity $T$ on a given trajectory. 
-
+ 
 \subsubsection{Modeling Markov Jumps}
-The sample paths of the loss process $L$ are piecewise constant. Let $\tilde{t_{i}}$ denote the $i$th ordered jump time of L, for each $i = 1, \dots , n,$ (or $\tilde{t_{i}}  = + \infty$, in case there are less than $i$ jumps on a given trajectory). For the implementation of the algorithm the time steps are chosen randomly from exponential distribution according to a given formula:
+The sample paths of the loss process $L$ are piecewise constant. Let $\tilde{t_{i}}$ denote the $i$th ordered jump time of L, for each $i = 1, \dots , n,$ (or $\tilde{t_{i}}  = + \infty$, in case there are less than $i$ jumps on a given trajectory). We also set $\tilde{t_{0}} = 0 $. Given a fixed maturity $T$, say $ T = 5yr$, we define $t_{i} = min(\tilde{t_{i}},T)$ for each $i = 0, \dots, n$. Consequently, $t_{i} < T$ and $L_{t_{i}} = i$ if and only if there are at least i jumps of $L$ before the maturity $T$ on a given trajectory. For the implementation of the algorithm the time steps are chosen randomly from exponential distribution according to a given formula:
 \begin{equation}
 \label{eqn:evolve}
 \Delta t \sim \frac{1}{1-\frac{L_{t}}{n}} \times \exp(-x)
