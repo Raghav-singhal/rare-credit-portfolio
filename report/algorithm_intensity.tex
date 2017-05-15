@@ -15,10 +15,7 @@ We take $M$ particles, where each particle represents a complete portfolio,
 with identical initial values. So $\forall j \in \{,1,..,M\},$
 And we define the initial parent $\hat{W}_0^{j}=\hat{X}_0^{j}$.
 \begin{equation*}
-			\begin{split}
-				\hat{X}_0^{(j)} &= \left( t_{0}^{(j)},L_{t_0}^{(j)} \right),  \quad 
-				 1 \leq j\leq M                                                                    \\
-			\end{split}
+\hat{X}_0^{(j)} = \left( t_{0}^{(j)},L_{t_0}^{(j)} \right),  \quad  1 \leq j\leq M                                                                    
 \end{equation*}
 $ t_{0}^{(j)} = 0$ and $ L_{t_{0}}^{(j)} = 0$ $\forall 1 \leq j\leq M $ considering L as a pure birth process.
 
@@ -26,19 +23,18 @@ $ t_{0}^{(j)} = 0$ and $ L_{t_{0}}^{(j)} = 0$ $\forall 1 \leq j\leq M $ consider
 \subsubsection{Selection Stage}
 Sample independent $M$ particles with repetition from input $M$ paths according to empirical distribution under the given Gibbs measure.
 $\left(t^{(j)}_{n-1}, L_{t_{n-1}}^{(j)} \right)$ becomes $\left( \hat{t}_{n-1}^{(j)}, \hat{L}_{t_{n-1}}^{(j)}\right)$.
-		\begin{equation*}
-			\begin{split}
-				\eta_{p}^{M}(dX) &= \frac{1}{M \hat{\eta}_{p}^{M}}\sum_{j=1}^{M}\left(\omega^{\alpha}(X_{p}^{(j)})\right) \times \delta_{{X}_p^{(j)}}(dX) \\
-				&\text{Where} \quad
-				\hat{\eta}_{p}^{M} = \mathbb{E}_{p}^{m}\omega^{\alpha}(X) =
-				\frac{1}{M}\sum_{j=1}^{M}\left(\omega^{\alpha}(X_{p}^{(j)})\right)\\
-				&\omega^{\alpha}(X)= 
-                		\begin{cases}
-    						\exp(\alpha),& \text{if } t < T\\
-    						1,              & \text{otherwise}
-						 \end{cases}
-		    \end{split}
-		\end{equation*}
+
+\begin{eqnarray*}
+\eta_{p}^{M}(dX) & = & \frac{1}{M \hat{\eta}_{p}^{M}}\sum_{j=1}^{M}\left(\omega^{\alpha}(X_{p}^{(j)})\right) \times \delta_{{X}_p^{(j)}}(dX) \\
+\text{Where} \quad
+\hat{\eta}_{p}^{M} & = & \mathbb{E}_{p}^{m}\omega^{\alpha}(X) =
+\frac{1}{M}\sum_{j=1}^{M}\left(\omega^{\alpha}(X_{p}^{(j)})\right)\\
+\omega^{\alpha}(X) & = &  
+\begin{cases}
+\exp(\alpha), \text{if } t < T\\
+1,               \text{otherwise}
+\end{cases}
+\end{eqnarray*}
 
 Then we choose $M$ independent samples using the following distribution:
 
@@ -48,7 +44,7 @@ Then we choose $M$ independent samples using the following distribution:
 	\right] \times \delta_{(\hat{W}_p^{j},\hat{X}_p^{j})} (dW,dX)
 \end{equation}
 
-The particles selected are then denoted as $(\breve{W}_p^{j},\breve{X}_p^{j})$.
+The particles selected, are then denoted as $(\breve{W}_p^{j},\breve{X}_p^{j})$.
 
 \subsubsection{Mutation Stage}
 Evolve paths from $\left( \hat{t}_{n-1}^{(j)}, \hat{L}_{t_{n-1}}^{(j)}\right)$ to $\left(t^{(j)}_{n}, L_{t_{n}}^{(j)} \right)$.
